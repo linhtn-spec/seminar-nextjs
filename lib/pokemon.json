@@ -1,0 +1,11 @@
+[
+  {"id":1,"name":"Bulbasaur","types":["Lá","Độc"],"region":"Kanto","habitat":"Bìa rừng"},
+  {"id":4,"name":"Charmander","types":["Lửa"],"region":"Kanto","habitat":"Sườn núi"},
+  {"id":7,"name":"Squirtle","types":["Nước"],"region":"Kanto","habitat":"Ven hồ"},
+  {"id":25,"name":"Pikachu","types":["Điện"],"region":"Kanto","habitat":"Rừng thưa"},
+  {"id":39,"name":"Jigglypuff","types":["Thường","Tiên"],"region":"Kanto","habitat":"Đồng cỏ"},
+  {"id":94,"name":"Gengar","types":["Ma","Độc"],"region":"Kanto","habitat":"Khu di tích"},
+  {"id":133,"name":"Eevee","types":["Thường"],"region":"Kanto","habitat":"Đồng cỏ"},
+  {"id":143,"name":"Snorlax","types":["Thường"],"region":"Kanto","habitat":"Đường mòn"},
+  {"id":147,"name":"Dratini","types":["Rồng"],"region":"Kanto","habitat":"Hồ sâu"}
+]

@@ -1,0 +1,165 @@
+{
+  "measuredAt": "2026-11-19T04:32:57.974Z",
+  "origin": "http://127.0.0.1:4173",
+  "runs": 3,
+  "medians": {
+    "csr": {
+      "score": 100,
+      "fcp": 757.8986,
+      "lcp": 757.8986,
+      "cls": 0,
+      "tbt": 84,
+      "jsBytes": 187529,
+      "htmlBytes": 4549,
+      "requests": 15
+    },
+    "ssr": {
+      "score": 100,
+      "fcp": 648.8683,
+      "lcp": 648.8683,
+      "cls": 0,
+      "tbt": 88,
+      "jsBytes": 142219,
+      "htmlBytes": 7429,
+      "requests": 10
+    },
+    "ssg": {
+      "score": 100,
+      "fcp": 756.5389,
+      "lcp": 756.5389,
+      "cls": 0,
+      "tbt": 77,
+      "jsBytes": 142219,
+      "htmlBytes": 6380,
+      "requests": 10
+    }
+  },
+  "samples": {
+    "csr": [
+      {
+        "score": 100,
+        "fcp": 765.2516,
+        "lcp": 765.2516,
+        "cls": 0,
+        "tbt": 84,
+        "jsBytes": 187529,
+        "htmlBytes": 4549,
+        "requests": 15
+      },
+      {
+        "score": 100,
+        "fcp": 757.8986,
+        "lcp": 757.8986,
+        "cls": 0,
+        "tbt": 77,
+        "jsBytes": 187529,
+        "htmlBytes": 4549,
+        "requests": 15
+      },
+      {
+        "score": 99,
+        "fcp": 757.4143999999999,
+        "lcp": 757.4143999999999,
+        "cls": 0,
+        "tbt": 123,
+        "jsBytes": 187529,
+        "htmlBytes": 4549,
+        "requests": 15
+      }
+    ],
+    "ssr": [
+      {
+        "score": 100,
+        "fcp": 606.60715,
+        "lcp": 606.60715,
+        "cls": 0,
+        "tbt": 82,
+        "jsBytes": 142219,
+        "htmlBytes": 7429,
+        "requests": 10
+      },
+      {
+        "score": 99,
+        "fcp": 648.8683,
+        "lcp": 648.8683,
+        "cls": 0,
+        "tbt": 134,
+        "jsBytes": 142219,
+        "htmlBytes": 7429,
+        "requests": 10
+      },
+      {
+        "score": 100,
+        "fcp": 653.0947,
+        "lcp": 653.0947,
+        "cls": 0,
+        "tbt": 88,
+        "jsBytes": 142219,
+        "htmlBytes": 7429,
+        "requests": 10
+      }
+    ],
+    "ssg": [
+      {
+        "score": 100,
+        "fcp": 756.5389,
+        "lcp": 756.5389,
+        "cls": 0,
+        "tbt": 78,
+        "jsBytes": 142219,
+        "htmlBytes": 6380,
+        "requests": 10
+      },
+      {
+        "score": 100,
+        "fcp": 757.1824999999999,
+        "lcp": 757.1824999999999,
+        "cls": 0,
+        "tbt": 75,
+        "jsBytes": 142219,
+        "htmlBytes": 6380,
+        "requests": 10
+      },
+      {
+        "score": 100,
+        "fcp": 756.0518999999999,
+        "lcp": 756.0518999999999,
+        "cls": 0,
+        "tbt": 77,
+        "jsBytes": 142219,
+        "htmlBytes": 6380,
+        "requests": 10
+      }
+    ]
+  },
+  "conditions": {
+    "mode": "next build + next start",
+    "node": "v22.23.1",
+    "chrome": "Chrome/158.0.8127.36",
+    "lighthouse": "13.6.0",
+    "os": "linux 5.15.0-139-generic x64",
+    "cpu": "Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz",
+    "cores": 8,
+    "cache": "Cache trình duyệt lạnh (Chrome mới mỗi lượt); server dùng chung đã khởi động.",
+    "throttlingMethod": "simulate",
+    "throttling": {
+      "rttMs": 150,
+      "throughputKbps": 1638.4,
+      "requestLatencyMs": 562.5,
+      "downloadThroughputKbps": 1474.5600000000002,
+      "uploadThroughputKbps": 675,
+      "cpuSlowdownMultiplier": 4
+    },
+    "screenEmulation": {
+      "mobile": true,
+      "width": 412,
+      "height": 823,
+      "deviceScaleFactor": 1.75,
+      "disabled": false
+    },
+    "chromeFlags": [
+      "--headless",
+      "--disable-dev-shm-usage"
+    ]
+  }
+}

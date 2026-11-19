@@ -1,0 +1,10 @@
+[
+  {"key":"score","label":"Lighthouse Performance","unit":"/100"},
+  {"key":"fcp","label":"FCP","unit":"ms"},
+  {"key":"lcp","label":"LCP","unit":"ms"},
+  {"key":"cls","label":"CLS","unit":""},
+  {"key":"tbt","label":"Total Blocking Time","unit":"ms"},
+  {"key":"jsBytes","label":"JavaScript truyền qua mạng","unit":"byte"},
+  {"key":"htmlBytes","label":"HTML truyền qua mạng","unit":"byte"},
+  {"key":"requests","label":"Số request","unit":""}
+]

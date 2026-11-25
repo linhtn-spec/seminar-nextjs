@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         cli, 'run', scenario.file, '--testNamePattern', `${pattern}$`, '--reporter=json', `--outputFile=${reportFile}`,
       ], {
         cwd: process.cwd(),
-        env: { ...process.env, NODE_ENV: 'test', POKEDEX_TEST_MODE: scenario.mode },
+        env: { ...process.env, NODE_ENV: 'test' },
         timeout: 30_000,
         maxBuffer: 256 * 1024,
       })

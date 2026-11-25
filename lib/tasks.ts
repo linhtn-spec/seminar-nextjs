@@ -6,7 +6,6 @@ export const priorities = ["Thấp", "Vừa", "Cao"] as const;
 export const taskTitleLengthSchema = z
   .string()
   .trim()
-  // .min(3, "Tên nhiệm vụ cần ít nhất 3 ký tự.")
   .max(90, "Tên nhiệm vụ tối đa 90 ký tự.");
 
 export const taskInputSchema = z.object({

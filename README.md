@@ -56,7 +56,7 @@ public/      Ảnh bìa phong cảnh cục bộ
 pnpm benchmark
 ```
 
-Script tự build, chạy `next start` trên `127.0.0.1:4173`, kiểm tra HTML và đo ba lần mỗi route theo thứ tự luân phiên. Benchmark không thu INP. [Hướng dẫn Ubuntu và định nghĩa chỉ số](docs/benchmark.md) · [Slide lý thuyết seminar](Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx) · [Kịch bản demo 22–24 phút](docs/demo-script.md) · [15 câu hỏi ôn tập](docs/qa.md) · [Báo cáo Markdown](reports/benchmark.md) · [Dữ liệu JSON](reports/benchmark.json)
+Script tự build, chạy `next start` trên `127.0.0.1:4173`, kiểm tra HTML và đo ba lần mỗi route theo thứ tự luân phiên. Benchmark không thu INP. [Hướng dẫn Ubuntu và định nghĩa chỉ số](docs/benchmark.md) · [Slide lý thuyết seminar](Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx) · [Kịch bản demo 22–24 phút](docs/demo-script.md) · [Q&A và 15 câu hỏi ôn tập](docs/qa.md) · [Báo cáo Markdown](reports/benchmark.md) · [Dữ liệu JSON](reports/benchmark.json)
 
 | Tài liệu | Chủ đề |
 | --- | --- |

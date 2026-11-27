@@ -1,99 +1,99 @@
 {
-  "measuredAt": "2026-11-25T06:34:30.304Z",
+  "measuredAt": "2026-11-25T06:52:29.405Z",
   "origin": "http://127.0.0.1:4173",
   "runs": 3,
   "medians": {
     "csr": {
       "score": 99,
-      "fcp": 757.8716,
-      "lcp": 757.8716,
+      "fcp": 759.6751999999999,
+      "lcp": 759.6751999999999,
       "cls": 0,
-      "tbt": 93,
-      "jsBytes": 187265,
+      "tbt": 110,
+      "jsBytes": 187264,
       "htmlBytes": 4326,
       "requests": 15
     },
     "ssr": {
-      "score": 99,
-      "fcp": 606.79885,
-      "lcp": 1508.5607999999997,
+      "score": 100,
+      "fcp": 608.49485,
+      "lcp": 608.49485,
       "cls": 0,
-      "tbt": 137,
+      "tbt": 76,
       "jsBytes": 141954,
       "htmlBytes": 7211,
       "requests": 10
     },
     "ssg": {
       "score": 100,
-      "fcp": 756.8489,
-      "lcp": 758.0839000000001,
+      "fcp": 758.8958,
+      "lcp": 758.8958,
       "cls": 0,
-      "tbt": 74,
+      "tbt": 87,
       "jsBytes": 141954,
-      "htmlBytes": 6164,
+      "htmlBytes": 6166,
       "requests": 10
     }
   },
   "samples": {
     "csr": [
       {
-        "score": 99,
-        "fcp": 766.6931999999999,
-        "lcp": 766.6931999999999,
-        "cls": 0,
-        "tbt": 93,
-        "jsBytes": 187265,
-        "htmlBytes": 4326,
-        "requests": 15
-      },
-      {
         "score": 100,
-        "fcp": 757.8716,
-        "lcp": 757.8716,
+        "fcp": 763.1687,
+        "lcp": 763.1687,
         "cls": 0,
-        "tbt": 91,
-        "jsBytes": 187265,
+        "tbt": 79,
+        "jsBytes": 187264,
         "htmlBytes": 4326,
         "requests": 15
       },
       {
         "score": 99,
-        "fcp": 756.8978999999999,
-        "lcp": 756.8978999999999,
+        "fcp": 759.6751999999999,
+        "lcp": 759.6751999999999,
         "cls": 0,
-        "tbt": 118,
-        "jsBytes": 187265,
+        "tbt": 110,
+        "jsBytes": 187264,
+        "htmlBytes": 4326,
+        "requests": 15
+      },
+      {
+        "score": 99,
+        "fcp": 756.7097000000001,
+        "lcp": 756.7097000000001,
+        "cls": 0,
+        "tbt": 111,
+        "jsBytes": 187264,
         "htmlBytes": 4326,
         "requests": 15
       }
     ],
     "ssr": [
       {
-        "score": 99,
-        "fcp": 606.79885,
-        "lcp": 606.79885,
+        "score": 100,
+        "fcp": 608.49485,
+        "lcp": 608.49485,
         "cls": 0,
-        "tbt": 137,
+        "tbt": 79,
         "jsBytes": 141954,
         "htmlBytes": 7211,
         "requests": 10
       },
       {
-        "score": 97,
-        "fcp": 605.2804,
-        "lcp": 1508.5607999999997,
+        "score": 100,
+        "fcp": 604.67865,
+        "lcp": 604.67865,
         "cls": 0,
-        "tbt": 199,
+        "tbt": 76,
         "jsBytes": 141954,
         "htmlBytes": 7211,
         "requests": 10
       },
       {
-        "score": 99,
-        "fcp": 669.30745,
-        "lcp": 1658.6149,
+        "score": 100,
+        "fcp": 646.8512,
+        "lcp": 646.8512,
         "cls": 0,
-        "tbt": 93,
+        "tbt": 76,
         "jsBytes": 141954,
         "htmlBytes": 7211,
         "requests": 10
@@ -102,40 +102,40 @@
     "ssg": [
       {
         "score": 100,
-        "fcp": 758.0839000000001,
-        "lcp": 758.0839000000001,
+        "fcp": 760.8081,
+        "lcp": 760.8081,
         "cls": 0,
-        "tbt": 74,
+        "tbt": 87,
         "jsBytes": 141954,
-        "htmlBytes": 6164,
+        "htmlBytes": 6166,
         "requests": 10
       },
       {
         "score": 100,
-        "fcp": 756.559,
-        "lcp": 756.559,
+        "fcp": 756.4186,
+        "lcp": 756.4186,
         "cls": 0,
-        "tbt": 78,
+        "tbt": 76,
         "jsBytes": 141954,
-        "htmlBytes": 6164,
+        "htmlBytes": 6166,
         "requests": 10
       },
       {
         "score": 99,
-        "fcp": 756.8489,
-        "lcp": 1656.8489,
+        "fcp": 758.8958,
+        "lcp": 758.8958,
         "cls": 0,
-        "tbt": 74,
+        "tbt": 93,
         "jsBytes": 141954,
-        "htmlBytes": 6164,
+        "htmlBytes": 6166,
         "requests": 10
       }
     ]
   },
   "conditions": {
     "mode": "next build + next start",
-    "node": "v22.19.0",
-    "chrome": "Chrome/154.0.8037.57",
+    "node": "v22.23.1",
+    "chrome": "Chrome/158.0.8127.36",
     "lighthouse": "13.6.0",
     "os": "linux 6.8.0-149-generic x64",
     "cpu": "Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz",

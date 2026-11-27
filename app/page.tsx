@@ -1,10 +1,18 @@
 import Link from 'next/link'
-import { AppWindow, Database, Play, Server } from 'lucide-react'
+import { Activity, AppWindow, ChartNoAxesColumnIncreasing, Cpu, Database, FlaskConical, Image as ImageIcon, Layers, Play, Server } from 'lucide-react'
 import { TaskManager } from '../components/task-manager'
 import { strategies, strategyNames } from '../lib/rendering'
 
 const icons = { CSR: AppWindow, SSR: Server, SSG: Database }
 const tones = { CSR: 'water', SSR: 'fire', SSG: 'leaf' }
+const labLinks = [
+  { href: '/components', title: 'Server & Client', desc: 'Ranh giới component và Hydration', icon: Layers, tone: 'water' },
+  { href: '/labs/js-before', title: 'Tối ưu tải JS', desc: 'So sánh Trước / Sau dùng dynamic()', icon: Cpu, tone: 'fire' },
+  { href: '/labs/banner-before', title: 'Banner priority', desc: 'Tải sớm banner & WebP (LCP)', icon: ImageIcon, tone: 'electric' },
+  { href: '/performance', title: 'Memo & Server State', desc: 'React.memo và cache TanStack Query', icon: Activity, tone: 'leaf' },
+  { href: '/benchmark#before-after', title: 'Benchmark Lighthouse', desc: 'Bảng số đo CSR/SSR/SSG & Trước/Sau', icon: ChartNoAxesColumnIncreasing, tone: 'water' },
+  { href: '/tests', title: 'Component Testing', desc: 'Chạy Vitest bắt lỗi form theo AAA', icon: FlaskConical, tone: 'fire' },
+] as const
 
 export default function Home() {
   return <>
@@ -27,6 +35,17 @@ export default function Home() {
             <div><h3>{name}</h3><p>{strategies[name].title}</p></div>
           </Link>
         })}
+      </div>
+    </section>
+    <section className="section" aria-labelledby="labs-heading">
+      <div className="section-heading"><div><h2 id="labs-heading">Thực nghiệm tối ưu, đo Lighthouse &amp; kiểm thử</h2><p>Mở nhanh từng phần demo tương ứng với slide trình bày.</p></div></div>
+      <div className="strategy-grid">
+        {labLinks.map(({ href, title, desc, icon: Icon, tone }) => (
+          <Link prefetch={false} href={href} className="strategy-card" key={href}>
+            <div className={`strategy-icon tone-${tone}`}><Icon size={21} aria-hidden /></div>
+            <div><h3>{title}</h3><p>{desc}</p></div>
+          </Link>
+        ))}
       </div>
     </section>
     <TaskManager />

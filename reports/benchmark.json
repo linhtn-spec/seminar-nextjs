@@ -1,141 +1,309 @@
 {
-  "measuredAt": "2026-11-25T06:34:30.304Z",
+  "measuredAt": "2026-11-27T05:03:49.418Z",
   "origin": "http://127.0.0.1:4173",
   "runs": 3,
   "medians": {
     "csr": {
       "score": 99,
-      "fcp": 757.8716,
-      "lcp": 757.8716,
+      "fcp": 757.9075,
+      "lcp": 757.9075,
       "cls": 0,
-      "tbt": 93,
-      "jsBytes": 187265,
-      "htmlBytes": 4326,
+      "tbt": 121,
+      "jsBytes": 187969,
+      "htmlBytes": 4725,
       "requests": 15
     },
     "ssr": {
       "score": 99,
-      "fcp": 606.79885,
-      "lcp": 1508.5607999999997,
+      "fcp": 606.50545,
+      "lcp": 606.50545,
       "cls": 0,
-      "tbt": 137,
-      "jsBytes": 141954,
-      "htmlBytes": 7211,
+      "tbt": 101,
+      "jsBytes": 142659,
+      "htmlBytes": 7608,
       "requests": 10
     },
     "ssg": {
       "score": 100,
-      "fcp": 756.8489,
-      "lcp": 758.0839000000001,
+      "fcp": 755.9088999999999,
+      "lcp": 755.9088999999999,
       "cls": 0,
-      "tbt": 74,
-      "jsBytes": 141954,
-      "htmlBytes": 6164,
+      "tbt": 80,
+      "jsBytes": 142659,
+      "htmlBytes": 6562,
       "requests": 10
+    },
+    "js-before": {
+      "score": 91,
+      "fcp": 757.0809999999999,
+      "lcp": 757.0809999999999,
+      "cls": 0,
+      "tbt": 370,
+      "jsBytes": 261525,
+      "htmlBytes": 7880,
+      "requests": 14
+    },
+    "js-after": {
+      "score": 100,
+      "fcp": 757.7561000000001,
+      "lcp": 757.7561000000001,
+      "cls": 0,
+      "tbt": 91,
+      "jsBytes": 151958,
+      "htmlBytes": 7702,
+      "requests": 12
+    },
+    "banner-before": {
+      "score": 99,
+      "fcp": 756.3716,
+      "lcp": 2165.8675,
+      "cls": 0,
+      "tbt": 42.5,
+      "jsBytes": 150003,
+      "htmlBytes": 7368,
+      "requests": 13
+    },
+    "banner-after": {
+      "score": 100,
+      "fcp": 758.1294,
+      "lcp": 1808.1294000000003,
+      "cls": 0,
+      "tbt": 48,
+      "jsBytes": 149286,
+      "htmlBytes": 7561,
+      "requests": 13
     }
   },
   "samples": {
     "csr": [
       {
-        "score": 99,
-        "fcp": 766.6931999999999,
-        "lcp": 766.6931999999999,
-        "cls": 0,
-        "tbt": 93,
-        "jsBytes": 187265,
-        "htmlBytes": 4326,
-        "requests": 15
-      },
-      {
         "score": 100,
-        "fcp": 757.8716,
-        "lcp": 757.8716,
+        "fcp": 762.858,
+        "lcp": 762.858,
         "cls": 0,
-        "tbt": 91,
-        "jsBytes": 187265,
-        "htmlBytes": 4326,
+        "tbt": 85,
+        "jsBytes": 187969,
+        "htmlBytes": 4725,
         "requests": 15
       },
       {
         "score": 99,
-        "fcp": 756.8978999999999,
-        "lcp": 756.8978999999999,
+        "fcp": 756.4545,
+        "lcp": 756.4545,
         "cls": 0,
-        "tbt": 118,
-        "jsBytes": 187265,
-        "htmlBytes": 4326,
+        "tbt": 130,
+        "jsBytes": 187969,
+        "htmlBytes": 4725,
+        "requests": 15
+      },
+      {
+        "score": 99,
+        "fcp": 757.9075,
+        "lcp": 757.9075,
+        "cls": 0,
+        "tbt": 121,
+        "jsBytes": 187969,
+        "htmlBytes": 4725,
         "requests": 15
       }
     ],
     "ssr": [
       {
         "score": 99,
-        "fcp": 606.79885,
-        "lcp": 606.79885,
+        "fcp": 606.50545,
+        "lcp": 606.50545,
         "cls": 0,
-        "tbt": 137,
-        "jsBytes": 141954,
-        "htmlBytes": 7211,
-        "requests": 10
-      },
-      {
-        "score": 97,
-        "fcp": 605.2804,
-        "lcp": 1508.5607999999997,
-        "cls": 0,
-        "tbt": 199,
-        "jsBytes": 141954,
-        "htmlBytes": 7211,
+        "tbt": 101,
+        "jsBytes": 142659,
+        "htmlBytes": 7608,
         "requests": 10
       },
       {
         "score": 99,
-        "fcp": 669.30745,
-        "lcp": 1658.6149,
+        "fcp": 605.9056,
+        "lcp": 605.9056,
         "cls": 0,
-        "tbt": 93,
-        "jsBytes": 141954,
-        "htmlBytes": 7211,
+        "tbt": 105,
+        "jsBytes": 142659,
+        "htmlBytes": 7608,
+        "requests": 10
+      },
+      {
+        "score": 100,
+        "fcp": 649.66325,
+        "lcp": 649.66325,
+        "cls": 0,
+        "tbt": 81,
+        "jsBytes": 142659,
+        "htmlBytes": 7608,
         "requests": 10
       }
     ],
     "ssg": [
       {
         "score": 100,
-        "fcp": 758.0839000000001,
-        "lcp": 758.0839000000001,
+        "fcp": 758.6170999999999,
+        "lcp": 758.6170999999999,
         "cls": 0,
-        "tbt": 74,
-        "jsBytes": 141954,
-        "htmlBytes": 6164,
+        "tbt": 80,
+        "jsBytes": 142659,
+        "htmlBytes": 6562,
         "requests": 10
       },
       {
         "score": 100,
-        "fcp": 756.559,
-        "lcp": 756.559,
+        "fcp": 755.9088999999999,
+        "lcp": 755.9088999999999,
         "cls": 0,
-        "tbt": 78,
-        "jsBytes": 141954,
-        "htmlBytes": 6164,
+        "tbt": 79,
+        "jsBytes": 142659,
+        "htmlBytes": 6562,
         "requests": 10
       },
       {
         "score": 99,
-        "fcp": 756.8489,
-        "lcp": 1656.8489,
+        "fcp": 755.4389000000001,
+        "lcp": 755.4389000000001,
         "cls": 0,
-        "tbt": 74,
-        "jsBytes": 141954,
-        "htmlBytes": 6164,
+        "tbt": 96,
+        "jsBytes": 142659,
+        "htmlBytes": 6562,
         "requests": 10
+      }
+    ],
+    "js-before": [
+      {
+        "score": 92,
+        "fcp": 758.5935,
+        "lcp": 758.5935,
+        "cls": 0,
+        "tbt": 364,
+        "jsBytes": 261525,
+        "htmlBytes": 7880,
+        "requests": 14
+      },
+      {
+        "score": 91,
+        "fcp": 755.7505000000001,
+        "lcp": 755.7505000000001,
+        "cls": 0,
+        "tbt": 370,
+        "jsBytes": 261525,
+        "htmlBytes": 7880,
+        "requests": 14
+      },
+      {
+        "score": 91,
+        "fcp": 757.0809999999999,
+        "lcp": 757.0809999999999,
+        "cls": 0,
+        "tbt": 374,
+        "jsBytes": 261525,
+        "htmlBytes": 7880,
+        "requests": 14
+      }
+    ],
+    "js-after": [
+      {
+        "score": 100,
+        "fcp": 757.7561000000001,
+        "lcp": 757.7561000000001,
+        "cls": 0,
+        "tbt": 88,
+        "jsBytes": 151958,
+        "htmlBytes": 7702,
+        "requests": 12
+      },
+      {
+        "score": 99,
+        "fcp": 757.7149999999999,
+        "lcp": 757.7149999999999,
+        "cls": 0,
+        "tbt": 106,
+        "jsBytes": 151958,
+        "htmlBytes": 7702,
+        "requests": 12
+      },
+      {
+        "score": 100,
+        "fcp": 757.8786,
+        "lcp": 757.8786,
+        "cls": 0,
+        "tbt": 91,
+        "jsBytes": 151958,
+        "htmlBytes": 7702,
+        "requests": 12
+      }
+    ],
+    "banner-before": [
+      {
+        "score": 99,
+        "fcp": 756.9431999999999,
+        "lcp": 2161.9431999999997,
+        "cls": 0,
+        "tbt": 40,
+        "jsBytes": 150003,
+        "htmlBytes": 7368,
+        "requests": 13
+      },
+      {
+        "score": 99,
+        "fcp": 756.3716,
+        "lcp": 2166.3716,
+        "cls": 0,
+        "tbt": 42.5,
+        "jsBytes": 150003,
+        "htmlBytes": 7368,
+        "requests": 13
+      },
+      {
+        "score": 99,
+        "fcp": 755.8675000000001,
+        "lcp": 2165.8675,
+        "cls": 0,
+        "tbt": 42.5,
+        "jsBytes": 150003,
+        "htmlBytes": 7368,
+        "requests": 13
+      }
+    ],
+    "banner-after": [
+      {
+        "score": 100,
+        "fcp": 758.1294,
+        "lcp": 1808.1294000000003,
+        "cls": 0,
+        "tbt": 44.5,
+        "jsBytes": 149286,
+        "htmlBytes": 7561,
+        "requests": 13
+      },
+      {
+        "score": 98,
+        "fcp": 758.6401000000001,
+        "lcp": 2251.6401,
+        "cls": 0,
+        "tbt": 93,
+        "jsBytes": 149286,
+        "htmlBytes": 7561,
+        "requests": 13
+      },
+      {
+        "score": 100,
+        "fcp": 757.8163,
+        "lcp": 1807.8163,
+        "cls": 0,
+        "tbt": 48,
+        "jsBytes": 149286,
+        "htmlBytes": 7561,
+        "requests": 13
       }
     ]
   },
   "conditions": {
     "mode": "next build + next start",
-    "node": "v22.19.0",
-    "chrome": "Chrome/154.0.8037.57",
+    "node": "v22.23.1",
+    "chrome": "Chrome/158.0.8127.36",
     "lighthouse": "13.6.0",
     "os": "linux 6.8.0-149-generic x64",
     "cpu": "Intel(R) Core(TM) i3-10105 CPU @ 3.70GHz",

@@ -6,7 +6,16 @@ import { setTimeout as delay } from 'node:timers/promises'
 import lighthouse from 'lighthouse'
 import { launch } from 'chrome-launcher'
 
-const routes = ['csr', 'ssr', 'ssg']
+const targets = [
+  { key: 'csr', path: 'csr' },
+  { key: 'ssr', path: 'ssr' },
+  { key: 'ssg', path: 'ssg' },
+  { key: 'js-before', path: 'labs/js-before' },
+  { key: 'js-after', path: 'labs/js-after' },
+  { key: 'banner-before', path: 'labs/banner-before' },
+  { key: 'banner-after', path: 'labs/banner-after' },
+]
+
 const runs = Number(process.env.BENCH_RUNS ?? 3)
 const port = Number(process.env.BENCH_PORT ?? 4173)
 if (!Number.isInteger(runs) || runs < 3) throw new Error('BENCH_RUNS phải là số nguyên từ 3 trở lên.')
@@ -14,7 +23,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('BENCH_
 
 const origin = `http://127.0.0.1:${port}`
 const metrics = JSON.parse(await readFile(new URL('../lib/benchmark-metrics.json', import.meta.url), 'utf8'))
-const cases = Object.fromEntries(routes.map((route) => [route, []]))
+const cases = Object.fromEntries(targets.map(({ key }) => [key, []]))
 const chromeFlags = ['--headless', '--disable-dev-shm-usage']
 if (process.env.BENCH_CHROME_NO_SANDBOX === '1') chromeFlags.push('--no-sandbox')
 const nextCli = createRequire(import.meta.url).resolve('next/dist/bin/next')
@@ -43,11 +52,11 @@ async function waitForServer(server) {
   throw new Error('Không kết nối được Next.js để benchmark.')
 }
 
-async function verifyRendering() {
+async function verifyRoutes() {
   const api = await fetch(origin + '/api/pokemon')
   if (!api.ok) throw new Error('API Pokédex không sẵn sàng.')
   const expected = (await api.json()).map(({ id }) => String(id))
-  for (const route of routes) {
+  for (const route of ['csr', 'ssr', 'ssg']) {
     const response = await fetch(origin + '/' + route)
     if (!response.ok) throw new Error(`Route /${route} trả HTTP ${response.status}.`)
     const html = await response.text()
@@ -55,6 +64,11 @@ async function verifyRendering() {
     if (route === 'csr' ? actual.length > 0 : actual.join(',') !== expected.join(',')) {
       throw new Error(`HTML ban đầu của /${route} khác với dữ liệu và chiến lược dự kiến.`)
     }
+  }
+  for (const { path } of targets.slice(3)) {
+    const response = await fetch(origin + '/' + path)
+    if (!response.ok) throw new Error(`Route /${path} trả HTTP ${response.status}.`)
+    await response.text()
   }
 }
 
@@ -86,7 +100,35 @@ function extract(lhr) {
   return sample
 }
 
+function formatDelta(before, after, key) {
+  const diff = after - before
+  if (Math.abs(diff) < 0.0005) return '0'
+  const sign = diff > 0 ? '+' : ''
+  const val = Number(diff.toFixed(3))
+  if (key === 'score' || key === 'cls' || key === 'requests') return `${sign}${val}`
+  const pct = before > 0 ? Math.round((diff / before) * 100) : 0
+  return `${sign}${val} (${pct > 0 ? '+' : ''}${pct}%)`
+}
+
+function pairTable(title, beforeKey, afterKey, medians) {
+  const keys = ['score', 'lcp', 'cls', 'tbt', 'fcp', 'jsBytes', 'requests']
+  const rows = keys.map((k) => metrics.find((m) => m.key === k)).filter(Boolean)
+  return [
+    `## ${title}`,
+    '',
+    '| Chỉ số | Trước (Before) | Sau (After) | Thay đổi |',
+    '| --- | ---: | ---: | ---: |',
+    ...rows.map(({ key, label, unit }) => {
+      const b = medians[beforeKey][key]
+      const a = medians[afterKey][key]
+      return `| ${label}${unit ? ` (${unit})` : ''} | ${Number(b.toFixed(3))} | ${Number(a.toFixed(3))} | ${formatDelta(b, a, key)} |`
+    }),
+    '',
+  ]
+}
+
 function reportMarkdown(data) {
+  const renderRoutes = ['csr', 'ssr', 'ssg']
   return [
     '# Benchmark Pokédex',
     '',
@@ -97,11 +139,15 @@ function reportMarkdown(data) {
     `Throttling: RTT ${data.conditions.throttling.rttMs} ms, thông lượng ${data.conditions.throttling.throughputKbps} Kbit/s, CPU chậm hơn ${data.conditions.throttling.cpuSlowdownMultiplier} lần.`,
     'HTML và JavaScript dùng transferSize của Lighthouse. Số request là số dòng trong audit network-requests. INP cần đo từ phiên tương tác.',
     '',
+    '## 1. So sánh chiến lược Rendering (CSR / SSR / SSG)',
+    '',
     '| Chỉ số | CSR | SSR | SSG |',
     '| --- | ---: | ---: | ---: |',
-    ...metrics.map(({ key, label, unit }) => `| ${label}${unit ? ` (${unit})` : ''} | ${routes.map((route) => Number(data.medians[route][key].toFixed(3))).join(' | ')} |`),
+    ...metrics.map(({ key, label, unit }) => `| ${label}${unit ? ` (${unit})` : ''} | ${renderRoutes.map((route) => Number(data.medians[route][key].toFixed(3))).join(' | ')} |`),
     '',
-    'Số đo phản ánh bản build và điều kiện ghi ở trên. Các route có đường tải dữ liệu và phạm vi JavaScript khác nhau.',
+    ...pairTable('2. Trước & Sau tối ưu tải JS (/labs/js-before → /labs/js-after)', 'js-before', 'js-after', data.medians),
+    ...pairTable('3. Trước & Sau tối ưu ảnh banner priority (/labs/banner-before → /labs/banner-after)', 'banner-before', 'banner-after', data.medians),
+    'Số đo phản ánh bản build và điều kiện ghi ở trên.',
     '',
   ].join('\n')
 }
@@ -110,13 +156,13 @@ await completion(command('run', 'build'))
 const server = spawn(process.execPath, [nextCli, 'start', '--hostname', '127.0.0.1', '--port', String(port)], { stdio: 'inherit' })
 try {
   await waitForServer(server)
-  await verifyRendering()
+  await verifyRoutes()
   let environment
   let chromeVersion
   for (let round = 0; round < runs; round++) {
-    const order = [...routes.slice(round % routes.length), ...routes.slice(0, round % routes.length)]
-    for (const route of order) {
-      console.log(`Đo /${route} · lượt ${round + 1}/${runs}`)
+    const order = [...targets.slice(round % targets.length), ...targets.slice(0, round % targets.length)]
+    for (const { key, path } of order) {
+      console.log(`Đo /${path} · lượt ${round + 1}/${runs}`)
       const chrome = await launch({ chromeFlags })
       try {
         if (!chromeVersion) {
@@ -124,10 +170,10 @@ try {
           if (!version.ok) throw new Error('Không đọc được phiên bản Chrome.')
           chromeVersion = (await version.json()).Browser
         }
-        const result = await lighthouse(origin + '/' + route, { port: chrome.port, logLevel: 'error', onlyCategories: ['performance'] })
+        const result = await lighthouse(origin + '/' + path, { port: chrome.port, logLevel: 'error', onlyCategories: ['performance'] })
         if (!result) throw new Error('Lighthouse không trả kết quả.')
         const { lhr } = result
-        cases[route].push(extract(lhr))
+        cases[key].push(extract(lhr))
         environment ??= lhr
       } finally {
         await chrome.kill()
@@ -135,8 +181,8 @@ try {
     }
   }
 
-  const medians = Object.fromEntries(routes.map((route) => [route, Object.fromEntries(
-    metrics.map(({ key }) => [key, median(cases[route].map((sample) => sample[key]))]),
+  const medians = Object.fromEntries(targets.map(({ key }) => [key, Object.fromEntries(
+    metrics.map(({ key: metricKey }) => [metricKey, median(cases[key].map((sample) => sample[metricKey]))]),
   )]))
   const data = {
     measuredAt: new Date().toISOString(), origin, runs, medians, samples: cases,

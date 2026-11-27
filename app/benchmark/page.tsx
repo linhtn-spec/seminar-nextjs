@@ -12,7 +12,15 @@ const sample = z.record(z.string(), z.number())
 const reportSchema = z.object({
   measuredAt: z.iso.datetime(),
   runs: z.number().int().positive(),
-  medians: z.object({ csr: sample, ssr: sample, ssg: sample }),
+  medians: z.object({
+    csr: sample,
+    ssr: sample,
+    ssg: sample,
+    'js-before': sample.optional(),
+    'js-after': sample.optional(),
+    'banner-before': sample.optional(),
+    'banner-after': sample.optional(),
+  }),
   conditions: z.object({
     lighthouse: z.string(), chrome: z.string(), node: z.string(),
     cache: z.string(), throttlingMethod: z.string(), os: z.string(), cpu: z.string().optional(),

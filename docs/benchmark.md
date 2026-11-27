@@ -1,6 +1,11 @@
-# Benchmark CSR, SSR và SSG
+# Benchmark CSR, SSR, SSG và Trước / Sau tối ưu
 
-Ba route dùng chung chín Pokémon, markup danh sách và layout. CSR yêu cầu API và tải mã của React Query cùng client graph của danh sách. SSR và SSG hiển thị danh sách trên server. Benchmark so sánh ba cách triển khai trong project này, gồm cả sự khác biệt JavaScript phát sinh từ cách triển khai.
+Script `pnpm benchmark` đo đồng thời hai nhóm thí nghiệm trên cùng bản build production để kiểm chứng bằng số liệu Lighthouse:
+
+1. **So sánh chiến lược rendering (`/csr`, `/ssr`, `/ssg`):** Ba route dùng chung chín Pokémon, markup danh sách và layout. CSR gọi `/api/pokemon` và tải TanStack Query ở trình duyệt; SSR và SSG render danh sách ngay trên server.
+2. **So sánh Trước / Sau khi sửa code:**
+   - **Tối ưu tải JS (`/labs/js-before` → `/labs/js-after`):** Bản Trước đặt cả danh sách và widget phân tích 151 loài Kanto (`lib/kanto-telemetry.json`) đồng bộ trong Client Component; bản Sau giữ danh sách ở Server Component và tách widget nặng qua `next/dynamic(..., { ssr: false })` chỉ tải khi bấm mở.
+   - **Ảnh banner tải sớm (`/labs/banner-before` → `/labs/banner-after`):** Bản Trước gắn banner PNG lớn (`banner-kanto-raw.png`) sau client hydrate với `loading="lazy"` không có `priority`; bản Sau render ngay ở Server Component dùng định dạng WebP (`banner-kanto.webp`), khai báo `width/height` giữ chỗ chống CLS và gắn `priority` (`<link rel="preload" as="image">`).
 
 ## Chạy trên Ubuntu
 
@@ -12,7 +17,7 @@ Ba route dùng chung chín Pokémon, markup danh sách và layout. CSR yêu cầ
 
 ## Điều kiện và cách đọc
 
-Script chạy `next build` rồi `next start` trên loopback, kiểm tra HTML ban đầu, dùng một Chrome headless mới cho mỗi lượt và xoay thứ tự các route. Lighthouse dùng mobile preset và throttling mô phỏng, với thông số ghi trong JSON. Chrome mới có browser cache lạnh. Tiến trình server dùng chung và được khởi động trước khi đo. Giảm ứng dụng chạy nền và giữ thiết bị, browser, phiên bản Lighthouse và điều kiện mạng nhất quán khi so sánh lại.
+Script chạy `next build` rồi `next start` trên loopback, kiểm tra trạng thái phản hồi ban đầu, dùng một Chrome headless mới cho mỗi lượt và xoay vòng thứ tự các route. Lighthouse dùng mobile preset và throttling mô phỏng, với thông số ghi trong JSON. Chrome mới có browser cache lạnh; tiến trình server dùng chung và được khởi động trước khi đo.
 
 | Chỉ số | Cách lấy |
 | --- | --- |
@@ -21,10 +26,10 @@ Script chạy `next build` rồi `next start` trên loopback, kiểm tra HTML ba
 | CLS | Audit Lighthouse, không có đơn vị |
 | TBT | Audit Lighthouse, mili giây |
 | JavaScript transfer size | Tổng `transferSize` của resource loại Script |
-| HTML response size | `transferSize` của tài liệu HTML chính, khác kích thước file HTML thô trên đĩa |
+| HTML response size | `transferSize` của tài liệu HTML chính |
 | Số request | Số dòng audit `network-requests` |
 
-INP yêu cầu phiên tương tác phù hợp. Benchmark navigation này không thu INP. Phần tử được chọn cho LCP có thể là tiêu đề hoặc nội dung khác xuất hiện trước thẻ Pokémon. Để biết lúc danh sách sẵn sàng, đối chiếu waterfall của API với thời điểm danh sách xuất hiện trong trace. Báo cáo dùng trung vị cho từng chỉ số theo route. JSON lưu mọi mẫu gốc và thông tin môi trường để đối chiếu.
+INP yêu cầu phiên tương tác phù hợp. Benchmark navigation này không thu INP. Báo cáo dùng trung vị cho từng chỉ số theo route; JSON lưu mọi mẫu gốc và thông tin môi trường để đối chiếu.
 
 ## Kết quả
 

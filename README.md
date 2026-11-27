@@ -1,6 +1,6 @@
 # Pokédex Lab · Frontend Roadmap
 
-Demo Next.js App Router cho seminar bằng tiếng Việt. Cùng chín Pokémon vùng Kanto được hiển thị theo CSR, SSR và SSG. Trang chủ có sổ nhiệm vụ nghiên cứu với tìm kiếm, lọc và CRUD lưu trên trình duyệt. Các địa điểm quan sát và dữ liệu biểu đồ được đặt để minh họa.
+Demo Next.js App Router cho seminar bằng tiếng Việt. Ứng dụng minh họa hai phần thực hành trọng tâm: so sánh chiến lược rendering (**CSR, SSR, SSG, Server & Client Components**) và kiểm chứng các biện pháp tối ưu hiệu năng (**giảm JS với `dynamic()`, ảnh banner `priority` + WebP, lazy load, cache, `React.memo`, Server state**) bằng số liệu **Lighthouse Trước / Sau** cùng **Component Testing**.
 
 ## Chạy trên máy local
 
@@ -11,7 +11,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Mở [http://127.0.0.1:3000](http://127.0.0.1:3000). Khi trình bày View Page Source, cache hay Network, hãy sử dụng production:
+Mở [http://127.0.0.1:3000](http://127.0.0.1:3000). Khi trình bày View Page Source, cache, `<link rel="preload">` hay Network, hãy sử dụng production:
 
 ```sh
 pnpm typecheck
@@ -31,23 +31,27 @@ pnpm start
 | `/ssr` | Server đọc dữ liệu theo request và trả HTML đã có Pokédex |
 | `/ssg` | Next.js tạo HTML Pokédex khi build |
 | `/components` | Server Component đọc dữ liệu, Client Component tìm và lọc |
-| `/performance` | Lazy loading, React.memo, TanStack Query và Core Web Vitals |
+| `/labs/js-before` | Thí nghiệm JS (Trước): tải đồng bộ widget phân tích 151 loài Kanto trên Client |
+| `/labs/js-after` | Thí nghiệm JS (Sau): Server Component + tách `next/dynamic()` chỉ tải khi bấm |
+| `/labs/banner-before` | Thí nghiệm Banner (Trước): tải PNG lớn sau hydrate, `loading="lazy"`, không `priority` |
+| `/labs/banner-after` | Thí nghiệm Banner (Sau): Server Component + WebP + `priority` (`<link rel="preload">`) |
+| `/performance` | `React.memo`, TanStack Query Server state và Core Web Vitals |
 | `/lazy-load` | Demo lazy load ảnh khi cuộn trong thư viện |
 | `/tests` | Hai test thêm và tìm kiếm nhiệm vụ, hiển thị các bước kiểm tra và kết quả Vitest |
-| `/benchmark` | Phương pháp đo và bảng trung vị từ báo cáo Lighthouse |
+| `/benchmark` | Bảng Lighthouse so sánh CSR/SSR/SSG và cặp Trước/Sau tối ưu (6 chỉ số) |
 | `/api/pokemon` | API nội bộ. Thêm `?loi=1` để lấy phản hồi lỗi mô phỏng |
 
 Sau build, mở [.next/server/app/ssg.html](.next/server/app/ssg.html) và tìm `data-pokemon-id="25"`. Dữ liệu Pokédex đọc từ `lib/pokemon.json`; nút **Khôi phục mẫu** chỉ tác động đến nhiệm vụ của browser hiện tại.
 
 ```text
-app/         Route, layout, API và CSS
-components/  Giao diện nhiệm vụ, Pokédex, mô phỏng và thử nghiệm
-lib/         Dữ liệu, schema và định nghĩa các bước rendering
+app/         Route (kể cả app/labs/* Before/After), layout, API và CSS
+components/  Giao diện nhiệm vụ, Pokédex, mô phỏng, analytics và thử nghiệm
+lib/         Dữ liệu (pokemon.json, kanto-telemetry.json), schema và bước rendering
 tests/       Hai test Vitest và React Testing Library: thêm và tìm kiếm nhiệm vụ
-scripts/     Script đo Lighthouse
-docs/        Tài liệu và kịch bản trình bày
+scripts/     Script đo Lighthouse cho CSR/SSR/SSG và các cặp Before/After
+docs/        Tài liệu, kịch bản thuyết trình và Q&A
 reports/     Báo cáo JSON và Markdown sau khi đo
-public/      Ảnh bìa phong cảnh cục bộ
+public/      Ảnh banner (banner-kanto.webp, banner-kanto-raw.png) và ảnh minh họa
 ```
 
 ## Benchmark và tài liệu
@@ -56,7 +60,7 @@ public/      Ảnh bìa phong cảnh cục bộ
 pnpm benchmark
 ```
 
-Script tự build, chạy `next start` trên `127.0.0.1:4173`, kiểm tra HTML và đo ba lần mỗi route theo thứ tự luân phiên. Benchmark không thu INP. [Hướng dẫn Ubuntu và định nghĩa chỉ số](docs/benchmark.md) · [Slide lý thuyết seminar](Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx) · [Kịch bản demo 22–24 phút](docs/demo-script.md) · [Q&A và 15 câu hỏi ôn tập](docs/qa.md) · [Báo cáo Markdown](reports/benchmark.md) · [Dữ liệu JSON](reports/benchmark.json)
+Script tự build, chạy `next start` trên `127.0.0.1:4173`, kiểm tra phản hồi ban đầu và đo ba lần mỗi route (7 route: `csr`, `ssr`, `ssg`, `js-before`, `js-after`, `banner-before`, `banner-after`) theo thứ tự luân phiên. Benchmark không thu INP. [Hướng dẫn Ubuntu và định nghĩa chỉ số](docs/benchmark.md) · [Slide trình bày seminar](Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx) · [Kịch bản demo 23–25 phút](docs/demo-script.md) · [Q&A và 15 câu hỏi ôn tập](docs/qa.md) · [Báo cáo Markdown](reports/benchmark.md) · [Dữ liệu JSON](reports/benchmark.json)
 
 | Tài liệu | Chủ đề |
 | --- | --- |

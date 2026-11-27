@@ -1,4 +1,5 @@
-import { Activity, AppWindow, ChevronDown, Database, Server, Timer } from 'lucide-react'
+import Link from 'next/link'
+import { Activity, AppWindow, ArrowRight, ChevronDown, Cpu, Database, Image as ImageIcon, Server, Timer } from 'lucide-react'
 import metrics from '../../lib/benchmark-metrics.json'
 import styles from './results.module.css'
 
@@ -8,13 +9,121 @@ const routes = [
   { key: 'ssg', name: 'SSG', icon: Database, color: styles.ssg },
 ] as const
 
-export type BenchmarkMedians = Record<(typeof routes)[number]['key'], Record<string, number>>
+const comparisonKeys = ['score', 'lcp', 'cls', 'tbt', 'fcp', 'jsBytes'] as const
+
+export type BenchmarkMedians = {
+  csr: Record<string, number>
+  ssr: Record<string, number>
+  ssg: Record<string, number>
+  'js-before'?: Record<string, number>
+  'js-after'?: Record<string, number>
+  'banner-before'?: Record<string, number>
+  'banner-after'?: Record<string, number>
+}
 
 const integer = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 })
 const decimal = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 3 })
 
 function format(value: number | undefined, formatter = decimal) {
   return value === undefined ? '—' : formatter.format(value)
+}
+
+function formatMetricValue(key: string, value: number | undefined) {
+  if (value === undefined) return '—'
+  if (key === 'jsBytes') return `${integer.format(value)} B (${decimal.format(Math.round(value / 102.4) / 10)} kB)`
+  if (key === 'score' || key === 'requests') return integer.format(value)
+  if (key === 'cls') return decimal.format(value)
+  return `${integer.format(Math.round(value))} ms`
+}
+
+function formatDelta(key: string, before: number | undefined, after: number | undefined) {
+  if (before === undefined || after === undefined) return { text: '—', improved: false }
+  const diff = after - before
+  if (Math.abs(diff) < 0.0005) return { text: 'Không đổi', improved: false }
+  const higherIsBetter = key === 'score'
+  const improved = higherIsBetter ? diff > 0 : diff < 0
+  const sign = diff > 0 ? '+' : ''
+  const pct = before > 0 ? Math.round((diff / before) * 100) : 0
+
+  if (key === 'score') {
+    return { text: `${sign}${decimal.format(diff)} điểm`, improved }
+  }
+  if (key === 'cls') {
+    return { text: `${sign}${decimal.format(diff)}`, improved }
+  }
+  if (key === 'jsBytes') {
+    const kbDiff = Math.round((diff / 1024) * 10) / 10
+    return { text: `${sign}${decimal.format(kbDiff)} kB (${pct > 0 ? '+' : ''}${pct}%)`, improved }
+  }
+  return { text: `${sign}${integer.format(Math.round(diff))} ms (${pct > 0 ? '+' : ''}${pct}%)`, improved }
+}
+
+function OptimizationPanel({
+  title,
+  subtitle,
+  icon: Icon,
+  before,
+  after,
+  beforeHref,
+  afterHref,
+}: {
+  title: string
+  subtitle: string
+  icon: typeof Cpu
+  before: Record<string, number>
+  after: Record<string, number>
+  beforeHref: string
+  afterHref: string
+}) {
+  const compareMetrics = comparisonKeys
+    .map((key) => metrics.find((m) => m.key === key))
+    .filter((item): item is (typeof metrics)[number] => item !== undefined)
+
+  return (
+    <section className={`panel ${styles.compareCard}`}>
+      <div className={styles.metricHeading}>
+        <span className={styles.metricIcon}><Icon size={20} aria-hidden /></span>
+        <div>
+          <h3>{title}</h3>
+          <p>{subtitle}</p>
+        </div>
+      </div>
+      <div className={styles.tableWrap}>
+        <table className={styles.compareTable}>
+          <thead>
+            <tr>
+              <th scope="col">Chỉ số</th>
+              <th scope="col">Trước (Before)</th>
+              <th scope="col">Sau (After)</th>
+              <th scope="col">Thay đổi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compareMetrics.map(({ key, label }) => {
+              const delta = formatDelta(key, before[key], after[key])
+              return (
+                <tr key={key}>
+                  <th scope="row">{label}</th>
+                  <td>{formatMetricValue(key, before[key])}</td>
+                  <td>{formatMetricValue(key, after[key])}</td>
+                  <td>
+                    <span className={delta.improved ? styles.deltaGood : styles.deltaNeutral}>
+                      {delta.text}
+                    </span>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className={styles.pairLinks}>
+        <Link href={beforeHref} prefetch={false} className="button">Mở bản Trước</Link>
+        <ArrowRight size={15} aria-hidden />
+        <Link href={afterHref} prefetch={false} className="button primary">Mở bản Sau tối ưu</Link>
+      </div>
+    </section>
+  )
 }
 
 export function BenchmarkResults({ medians, date, runs }: {
@@ -32,6 +141,8 @@ export function BenchmarkResults({ medians, date, runs }: {
   const min = Math.min(...measured)
   const fastest = rows.filter(({ lcp }) => lcp === min)
   const winner = measured.length === rows.length && fastest.length === 1 ? fastest[0] : undefined
+  const hasJsPair = medians['js-before'] && medians['js-after']
+  const hasBannerPair = medians['banner-before'] && medians['banner-after']
 
   return <>
     <div className={styles.meta}>
@@ -78,8 +189,44 @@ export function BenchmarkResults({ medians, date, runs }: {
         <p className={styles.note}>Điểm càng cao càng tốt. Số request cho biết trình duyệt đã gửi bao nhiêu yêu cầu khi tải trang.</p>
       </section>
     </div>
+
+    {(hasJsPair || hasBannerPair) && (
+      <section className="section" id="before-after" aria-labelledby="before-after-heading">
+        <div className="section-heading">
+          <div>
+            <h2 id="before-after-heading">Trước và Sau khi tối ưu code (Lighthouse)</h2>
+            <p>So sánh 6 chỉ số Performance, LCP, CLS, TBT, FCP và dung lượng JS trên cùng điều kiện đo.</p>
+          </div>
+        </div>
+        <div className={styles.compareGrid}>
+          {hasJsPair && (
+            <OptimizationPanel
+              title="1. Tối ưu tải JS (dynamic() & Server Component)"
+              subtitle="Trước: import đồng bộ 151 loài trên Client · Sau: tách Server Component + next/dynamic()"
+              icon={Cpu}
+              before={medians['js-before']!}
+              after={medians['js-after']!}
+              beforeHref="/labs/js-before"
+              afterHref="/labs/js-after"
+            />
+          )}
+          {hasBannerPair && (
+            <OptimizationPanel
+              title="2. Ảnh banner tải sớm (priority + WebP)"
+              subtitle="Trước: tải bình thường PNG chưa priority · Sau: WebP + priority (<link rel='preload'>)"
+              icon={ImageIcon}
+              before={medians['banner-before']!}
+              after={medians['banner-after']!}
+              beforeHref="/labs/banner-before"
+              afterHref="/labs/banner-after"
+            />
+          )}
+        </div>
+      </section>
+    )}
+
     <details className={styles.details}>
-      <summary>Xem đầy đủ {metrics.length} chỉ số <ChevronDown size={17} aria-hidden /></summary>
+      <summary>Xem đầy đủ {metrics.length} chỉ số CSR / SSR / SSG <ChevronDown size={17} aria-hidden /></summary>
       <div className={styles.tableWrap} tabIndex={0} role="region" aria-label="Bảng chỉ số chi tiết">
         <table className={styles.fullTable}>
           <thead><tr><th scope="col">Chỉ số</th>{routes.map(({ name }) => <th key={name} scope="col">{name}</th>)}</tr></thead>

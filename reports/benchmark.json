@@ -1,134 +1,302 @@
 {
-  "measuredAt": "2026-11-25T06:52:29.405Z",
+  "measuredAt": "2026-11-27T05:03:49.418Z",
   "origin": "http://127.0.0.1:4173",
   "runs": 3,
   "medians": {
     "csr": {
       "score": 99,
-      "fcp": 759.6751999999999,
-      "lcp": 759.6751999999999,
+      "fcp": 757.9075,
+      "lcp": 757.9075,
       "cls": 0,
-      "tbt": 110,
-      "jsBytes": 187264,
-      "htmlBytes": 4326,
+      "tbt": 121,
+      "jsBytes": 187969,
+      "htmlBytes": 4725,
       "requests": 15
     },
     "ssr": {
-      "score": 100,
-      "fcp": 608.49485,
-      "lcp": 608.49485,
+      "score": 99,
+      "fcp": 606.50545,
+      "lcp": 606.50545,
       "cls": 0,
-      "tbt": 76,
-      "jsBytes": 141954,
-      "htmlBytes": 7211,
+      "tbt": 101,
+      "jsBytes": 142659,
+      "htmlBytes": 7608,
       "requests": 10
     },
     "ssg": {
       "score": 100,
-      "fcp": 758.8958,
-      "lcp": 758.8958,
+      "fcp": 755.9088999999999,
+      "lcp": 755.9088999999999,
       "cls": 0,
-      "tbt": 87,
-      "jsBytes": 141954,
-      "htmlBytes": 6166,
+      "tbt": 80,
+      "jsBytes": 142659,
+      "htmlBytes": 6562,
       "requests": 10
+    },
+    "js-before": {
+      "score": 91,
+      "fcp": 757.0809999999999,
+      "lcp": 757.0809999999999,
+      "cls": 0,
+      "tbt": 370,
+      "jsBytes": 261525,
+      "htmlBytes": 7880,
+      "requests": 14
+    },
+    "js-after": {
+      "score": 100,
+      "fcp": 757.7561000000001,
+      "lcp": 757.7561000000001,
+      "cls": 0,
+      "tbt": 91,
+      "jsBytes": 151958,
+      "htmlBytes": 7702,
+      "requests": 12
+    },
+    "banner-before": {
+      "score": 99,
+      "fcp": 756.3716,
+      "lcp": 2165.8675,
+      "cls": 0,
+      "tbt": 42.5,
+      "jsBytes": 150003,
+      "htmlBytes": 7368,
+      "requests": 13
+    },
+    "banner-after": {
+      "score": 100,
+      "fcp": 758.1294,
+      "lcp": 1808.1294000000003,
+      "cls": 0,
+      "tbt": 48,
+      "jsBytes": 149286,
+      "htmlBytes": 7561,
+      "requests": 13
     }
   },
   "samples": {
     "csr": [
       {
         "score": 100,
-        "fcp": 763.1687,
-        "lcp": 763.1687,
+        "fcp": 762.858,
+        "lcp": 762.858,
         "cls": 0,
-        "tbt": 79,
-        "jsBytes": 187264,
-        "htmlBytes": 4326,
+        "tbt": 85,
+        "jsBytes": 187969,
+        "htmlBytes": 4725,
         "requests": 15
       },
       {
         "score": 99,
-        "fcp": 759.6751999999999,
-        "lcp": 759.6751999999999,
+        "fcp": 756.4545,
+        "lcp": 756.4545,
         "cls": 0,
-        "tbt": 110,
-        "jsBytes": 187264,
-        "htmlBytes": 4326,
+        "tbt": 130,
+        "jsBytes": 187969,
+        "htmlBytes": 4725,
         "requests": 15
       },
       {
         "score": 99,
-        "fcp": 756.7097000000001,
-        "lcp": 756.7097000000001,
+        "fcp": 757.9075,
+        "lcp": 757.9075,
         "cls": 0,
-        "tbt": 111,
-        "jsBytes": 187264,
-        "htmlBytes": 4326,
+        "tbt": 121,
+        "jsBytes": 187969,
+        "htmlBytes": 4725,
         "requests": 15
       }
     ],
     "ssr": [
       {
-        "score": 100,
-        "fcp": 608.49485,
-        "lcp": 608.49485,
+        "score": 99,
+        "fcp": 606.50545,
+        "lcp": 606.50545,
         "cls": 0,
-        "tbt": 79,
-        "jsBytes": 141954,
-        "htmlBytes": 7211,
+        "tbt": 101,
+        "jsBytes": 142659,
+        "htmlBytes": 7608,
+        "requests": 10
+      },
+      {
+        "score": 99,
+        "fcp": 605.9056,
+        "lcp": 605.9056,
+        "cls": 0,
+        "tbt": 105,
+        "jsBytes": 142659,
+        "htmlBytes": 7608,
         "requests": 10
       },
       {
         "score": 100,
-        "fcp": 604.67865,
-        "lcp": 604.67865,
+        "fcp": 649.66325,
+        "lcp": 649.66325,
         "cls": 0,
-        "tbt": 76,
-        "jsBytes": 141954,
-        "htmlBytes": 7211,
-        "requests": 10
-      },
-      {
-        "score": 100,
-        "fcp": 646.8512,
-        "lcp": 646.8512,
-        "cls": 0,
-        "tbt": 76,
-        "jsBytes": 141954,
-        "htmlBytes": 7211,
+        "tbt": 81,
+        "jsBytes": 142659,
+        "htmlBytes": 7608,
         "requests": 10
       }
     ],
     "ssg": [
       {
         "score": 100,
-        "fcp": 760.8081,
-        "lcp": 760.8081,
+        "fcp": 758.6170999999999,
+        "lcp": 758.6170999999999,
         "cls": 0,
-        "tbt": 87,
-        "jsBytes": 141954,
-        "htmlBytes": 6166,
+        "tbt": 80,
+        "jsBytes": 142659,
+        "htmlBytes": 6562,
         "requests": 10
       },
       {
         "score": 100,
-        "fcp": 756.4186,
-        "lcp": 756.4186,
+        "fcp": 755.9088999999999,
+        "lcp": 755.9088999999999,
         "cls": 0,
-        "tbt": 76,
-        "jsBytes": 141954,
-        "htmlBytes": 6166,
+        "tbt": 79,
+        "jsBytes": 142659,
+        "htmlBytes": 6562,
         "requests": 10
       },
       {
         "score": 99,
-        "fcp": 758.8958,
-        "lcp": 758.8958,
+        "fcp": 755.4389000000001,
+        "lcp": 755.4389000000001,
+        "cls": 0,
+        "tbt": 96,
+        "jsBytes": 142659,
+        "htmlBytes": 6562,
+        "requests": 10
+      }
+    ],
+    "js-before": [
+      {
+        "score": 92,
+        "fcp": 758.5935,
+        "lcp": 758.5935,
+        "cls": 0,
+        "tbt": 364,
+        "jsBytes": 261525,
+        "htmlBytes": 7880,
+        "requests": 14
+      },
+      {
+        "score": 91,
+        "fcp": 755.7505000000001,
+        "lcp": 755.7505000000001,
+        "cls": 0,
+        "tbt": 370,
+        "jsBytes": 261525,
+        "htmlBytes": 7880,
+        "requests": 14
+      },
+      {
+        "score": 91,
+        "fcp": 757.0809999999999,
+        "lcp": 757.0809999999999,
+        "cls": 0,
+        "tbt": 374,
+        "jsBytes": 261525,
+        "htmlBytes": 7880,
+        "requests": 14
+      }
+    ],
+    "js-after": [
+      {
+        "score": 100,
+        "fcp": 757.7561000000001,
+        "lcp": 757.7561000000001,
+        "cls": 0,
+        "tbt": 88,
+        "jsBytes": 151958,
+        "htmlBytes": 7702,
+        "requests": 12
+      },
+      {
+        "score": 99,
+        "fcp": 757.7149999999999,
+        "lcp": 757.7149999999999,
+        "cls": 0,
+        "tbt": 106,
+        "jsBytes": 151958,
+        "htmlBytes": 7702,
+        "requests": 12
+      },
+      {
+        "score": 100,
+        "fcp": 757.8786,
+        "lcp": 757.8786,
+        "cls": 0,
+        "tbt": 91,
+        "jsBytes": 151958,
+        "htmlBytes": 7702,
+        "requests": 12
+      }
+    ],
+    "banner-before": [
+      {
+        "score": 99,
+        "fcp": 756.9431999999999,
+        "lcp": 2161.9431999999997,
+        "cls": 0,
+        "tbt": 40,
+        "jsBytes": 150003,
+        "htmlBytes": 7368,
+        "requests": 13
+      },
+      {
+        "score": 99,
+        "fcp": 756.3716,
+        "lcp": 2166.3716,
+        "cls": 0,
+        "tbt": 42.5,
+        "jsBytes": 150003,
+        "htmlBytes": 7368,
+        "requests": 13
+      },
+      {
+        "score": 99,
+        "fcp": 755.8675000000001,
+        "lcp": 2165.8675,
+        "cls": 0,
+        "tbt": 42.5,
+        "jsBytes": 150003,
+        "htmlBytes": 7368,
+        "requests": 13
+      }
+    ],
+    "banner-after": [
+      {
+        "score": 100,
+        "fcp": 758.1294,
+        "lcp": 1808.1294000000003,
+        "cls": 0,
+        "tbt": 44.5,
+        "jsBytes": 149286,
+        "htmlBytes": 7561,
+        "requests": 13
+      },
+      {
+        "score": 98,
+        "fcp": 758.6401000000001,
+        "lcp": 2251.6401,
         "cls": 0,
         "tbt": 93,
-        "jsBytes": 141954,
-        "htmlBytes": 6166,
-        "requests": 10
+        "jsBytes": 149286,
+        "htmlBytes": 7561,
+        "requests": 13
+      },
+      {
+        "score": 100,
+        "fcp": 757.8163,
+        "lcp": 1807.8163,
+        "cls": 0,
+        "tbt": 48,
+        "jsBytes": 149286,
+        "htmlBytes": 7561,
+        "requests": 13
       }
     ]
   },

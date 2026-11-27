@@ -1,155 +1,156 @@
-# Kịch bản thuyết trình · Rendering, hiệu năng và test component
+# Kịch bản thuyết trình · Rendering, tối ưu hiệu năng và kiểm thử component
 
-**Thời lượng gợi ý:** 22–24 phút trình bày, sau đó hỏi đáp. Dùng deck `Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx` ở thư mục gốc, cạnh `README.md`. Nội dung bên dưới đi theo đúng số slide. Phần **Nói** là lời dẫn nói miệng mạch lạc theo slide; phần **Demo** là thao tác thực hành trên trình duyệt/IDE ở các slide có nhãn **DEMO** (8, 11, 17, 21 và 26).
+**Thời lượng gợi ý:** 23–25 phút trình bày, sau đó hỏi đáp. Dùng deck `Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx` ở thư mục gốc, cạnh `README.md`. Nội dung bám sát cấu trúc **Mở đầu → Phần 1: Rendering → Phần 2: Chỉ số & Tối ưu (gồm đo Lighthouse Before/After & Component Test) → Q&A**. Phần **Nói** là lời dẫn nói miệng mạch lạc theo slide; phần **Demo** là thao tác trực hành trên trình duyệt/IDE ở các slide có nhãn **DEMO** (8, 11, 16, 17, 18, 20, 21 và 26).
 
 ## Chuẩn bị trước buổi nói
 
-1. Từ thư mục project, chạy `pnpm build`, rồi `pnpm exec next start --hostname 127.0.0.1 -p 4173`. Dùng `http://127.0.0.1:4173` làm địa chỉ gốc. Production quan trọng khi đối chiếu HTML ban đầu và Network; `next dev` có thêm hành vi phát triển.
-2. Mở sẵn các tab `/csr`, `/ssr`, `/ssg`, `/components`, `/lazy-load`, `/performance`, `/tests`, `/benchmark`. Hai route `/components` và `/performance` vẫn hoạt động khi nhập URL trực tiếp, dù không nằm trong menu.
-3. Mở Chrome DevTools, giữ tab Network; bật **Disable cache** khi demo lần tải mới. Trong IDE, mở `app/ssr/page.tsx`, `app/ssg/page.tsx`, `app/components/page.tsx`, `components/pokedex-filter.tsx`, `tests/tasks.test.tsx`.
+1. Từ thư mục project, chạy `pnpm build`, rồi `pnpm exec next start --hostname 127.0.0.1 -p 4173`. Dùng `http://127.0.0.1:4173` làm địa chỉ gốc. Bắt buộc dùng production build khi đối chiếu HTML ban đầu, `<link rel="preload">` và tab Network.
+2. Mở sẵn các tab `/csr`, `/ssr`, `/ssg`, `/components`, `/benchmark`, `/labs/js-before`, `/labs/js-after`, `/labs/banner-before`, `/labs/banner-after`, `/lazy-load`, `/performance`, `/tests`. Tất cả đều có trong menu điều hướng bên trái.
+3. Mở Chrome DevTools, giữ tab Network; bật **Disable cache** khi demo lần tải mới. Trong IDE, mở `app/ssr/page.tsx`, `app/ssg/page.tsx`, `app/components/page.tsx`, `components/pokedex-filter.tsx`, `app/labs/js-after/page.tsx`, `app/labs/banner-after/page.tsx`, `tests/tasks.test.tsx`.
 4. **Test tạo nhiệm vụ đang thất bại có chủ đích.** Form hiện cho lưu tên rỗng, còn test vẫn đòi thông báo “Tên nhiệm vụ là bắt buộc.” Khi chạy `pnpm test` hoặc trang `/tests`, kết quả dự kiến là 1 đạt, 1 thất bại. Đừng trình bày đây là một bộ test đã xanh.
-5. Bảng benchmark là báo cáo đã lưu từ **25/11/2026**, không phải đo trong buổi này. Nếu thay build hoặc máy đo, chạy lại `pnpm benchmark` trước khi khẳng định số mới. Trong buổi nói, dùng bảng để giải thích cách đọc số và giới hạn của phép đo.
+5. Bảng số liệu trên `/benchmark` và trong slide được đo thực tế từ bản production ngày **27/11/2026** bằng script `pnpm benchmark` (Chrome headless, Lighthouse 13.6.0, mobile preset). Nếu sửa code hoặc đổi máy, chạy lại `pnpm benchmark` trước khi đọc số mới.
 
 ## Lời dẫn theo slide
 
 ### Slide 1 · Mở đầu · 0:00–0:30
 
-**Nói:** “Chào mọi người, hôm nay mình đại diện trình bày chuyên đề Lộ trình Frontend do mình và Vương An Khang thực hiện. Mục tiêu buổi chia sẻ là trả lời ba câu hỏi thực tế: khi nào dùng CSR, SSR hay SSG; chia ranh giới Server và Client Components ra sao; và cách đo hiệu năng cũng như viết test cho giao diện.”
+**Nói:** “Chào mọi người, hôm nay mình đại diện trình bày chuyên đề Lộ trình Frontend do mình và Vương An Khang thực hiện. Chủ đề hôm nay là cách chọn chiến lược Rendering kết hợp các kỹ thuật tối ưu hóa và kiểm thử để giải bài toán nâng cao hiệu năng lẫn chất lượng code, có đo lường thực tế bằng Lighthouse.”
 
 ### Slide 2 · Nội dung trình bày (Menu) · 0:30–1:00
 
-**Nói:** “Bài nói hôm nay gồm bốn phần chính: đầu tiên là chiến lược rendering; thứ hai là kiến trúc React và hydration; thứ ba là đo lường, tối ưu hiệu năng; và cuối cùng là kiểm thử component. Sau mỗi phần lý thuyết, mình sẽ mở trực tiếp ứng dụng mẫu để kiểm chứng trên trình duyệt và code.”
+**Nói:** “Bài nói gồm phần Mở đầu đặt bài toán và hai phần trọng tâm. Phần một là Rendering: phân tích cơ chế, ưu nhược điểm và khi nào dùng CSR, SSR, SSG cũng như Server và Client Components. Phần hai đi vào Chỉ số Core Web Vitals, các kỹ thuật tối ưu thực tế như lazy load, giảm JS, tối ưu ảnh, cache, memo, server state, đối chiếu số liệu Lighthouse trước/sau sửa code, và cuối cùng là viết Component Test.”
 
-### Slide 3 · Vì sao trang có thể chậm? · 1:00–1:35
+### Slide 3 · Tổng quan bài toán: Hiệu năng & Chất lượng code · 1:00–1:40
 
-**Nói:** “Người dùng không nhìn code bên trong, họ chỉ cảm nhận hai thứ: trang hiện nhanh hay chậm, và bấm vào có mượt không. Một trang web thường chậm vì ba nút thắt: server trả HTML muộn, trình duyệt phải chạy quá nhiều JavaScript, hoặc dữ liệu API về trễ. Chọn đúng chiến lược render ngay từ đầu sẽ giúp giảm bớt những công việc không cần thiết.”
+**Nói:** “Bài chia sẻ hôm nay không đi theo hướng lý thuyết rời rạc. Thực tế một trang web thường chậm vì HTML về muộn, gửi thừa JavaScript, hoặc ảnh và dữ liệu tải trễ; đồng thời khi tối ưu hoặc sửa code mà thiếu test thì rất dễ phát sinh lỗi hồi quy. Vì vậy mục tiêu của nhóm là phối hợp đúng kiến trúc render với các biện pháp tối ưu cụ thể trên ứng dụng Pokédex Lab, sau đó dùng Lighthouse đo định lượng trước và sau khi sửa code để chứng minh hiệu quả.”
 
-### Slide 4 · Hai quyết định khác nhau · 1:35–2:15
+### Slide 4 · Hai trục quyết định trên cùng một trang · 1:40–2:10
 
-**Nói:** “Để chọn đúng cách triển khai, mình cần tách bạch hai quyết định độc lập. Thứ nhất là thời điểm tạo nội dung: tạo ở trình duyệt (CSR), tạo theo từng request (SSR), hay tạo sẵn lúc build (SSG). Thứ hai là nơi chạy mã: phần nào ở máy chủ, phần nào xuống trình duyệt. Hai trục này có thể kết hợp trên cùng một trang.”
+**Nói:** “Trước khi đi sâu vào từng kỹ thuật, cần tách rõ hai quyết định độc lập trên cùng một trang. Thứ nhất là thời điểm tạo HTML: ở trình duyệt (CSR), theo từng request (SSR), hay lúc build (SSG). Thứ hai là nơi chạy mã React: giữ ở Server Component hay gửi xuống Client Component.”
 
-### Slide 5 · CSR · 2:15–2:40
+### Slide 5 · CSR: Cơ chế, ưu nhược điểm & khi dùng · 2:10–2:50
 
-**Nói:** “Với CSR, HTML trả về ban đầu chỉ là khung rỗng. Trình duyệt phải tải JavaScript, chạy mã đó để gọi API rồi mới dựng nội dung lên màn hình. Vì vậy, người dùng phải chờ cả bước tải mã lẫn chờ API xong mới thấy phần dữ liệu chính.”
+**Nói:** “Với CSR, HTML ban đầu chỉ là khung rỗng; trình duyệt phải tải JavaScript rồi gọi API để dựng nội dung. Ưu điểm của CSR là giảm tải tính toán HTML cho server và xử lý tương tác nhiều trạng thái rất mượt. Nhược điểm là HTML đầu tiên chưa có dữ liệu, tốn thêm dung lượng JS và kéo dài thời gian chờ API. Vì vậy nên dùng CSR cho trang quản trị nội bộ, vùng dữ liệu tải sau đăng nhập hoặc widget nhiều tương tác.”
 
-### Slide 6 · SSR · 2:40–3:05
+### Slide 6 · SSR: Cơ chế, ưu nhược điểm & khi dùng · 2:50–3:30
 
-**Nói:** “Ngược lại, với SSR, mỗi khi có request gửi lên, máy chủ sẽ lấy dữ liệu và tạo sẵn HTML hoàn chỉnh rồi mới gửi về trình duyệt. Nhờ vậy nội dung chính đã nằm sẵn trong HTML phản hồi — mình có thể kiểm tra ngay bằng View Page Source.”
+**Nói:** “Ngược lại, ở SSR, mỗi khi có request tới, máy chủ đọc dữ liệu và tạo sẵn HTML hoàn chỉnh gửi về trình duyệt. Ưu điểm là người dùng và công cụ tìm kiếm nhận được nội dung ngay trong HTML đầu tiên, luôn mới theo từng yêu cầu. Nhược điểm là server tốn CPU xử lý mỗi lượt truy cập và nếu API/DB chậm thì TTFB và LCP sẽ chậm theo. SSR phù hợp cho trang cần dữ liệu cá nhân hóa theo người dùng hoặc thay đổi liên tục theo từng request.”
 
-### Slide 7 · SSG · 3:05–3:30
+### Slide 7 · SSG: Cơ chế, ưu nhược điểm & khi dùng · 3:30–4:10
 
-**Nói:** “Còn với SSG, file HTML được tạo sẵn một lần ngay lúc build và dùng lại cho tất cả lượt truy cập sau đó. Cách này rất nhanh và nhẹ cho server, phù hợp dữ liệu ít thay đổi; khi nội dung đổi, mình cần build lại hoặc bật cơ chế làm mới định kỳ.”
+**Nói:** “Còn với SSG, toàn bộ HTML được tạo sẵn một lần ngay lúc build và dùng lại cho mọi lượt truy cập. Ưu điểm là tốc độ phản hồi cực nhanh qua CDN, gần như không tốn công xử lý trên server và TBT rất thấp. Nhược điểm là nội dung đứng yên cho đến lần build sau hoặc phải cấu hình làm mới định kỳ. Do đó SSG rất hợp cho trang giới thiệu, tài liệu kỹ thuật, blog hoặc danh mục công khai ít thay đổi.”
 
-### Slide 8 · So sánh ba thời điểm · 3:30–5:45
+### Slide 8 · So sánh 3 kiểu render & Demo 1 · 4:10–6:10
 
-**Nói:** “Tóm lại, cùng một nội dung nhưng khác nhau ở thời điểm nó xuất hiện: CSR chờ JavaScript và fetch ở trình duyệt, SSR tạo theo từng request, còn SSG tạo sẵn từ lúc build. Bây giờ mình mở demo thực tế để kiểm chứng khác biệt này trên Network và View Page Source.”
+**Nói:** “Cùng một danh sách 9 Pokémon, ba chiến lược khác nhau hoàn toàn ở thời điểm nội dung xuất hiện: CSR chờ JS và API, SSR tạo HTML ở mỗi request, còn SSG tạo sẵn lúc build. Mình mở trực tiếp trên trình duyệt để kiểm chứng bằng Network và View Page Source.”
 
-**Demo (khoảng 2 phút):** Mở `/csr`, bật Network và lọc **Fetch/XHR** để chỉ rõ request `/api/pokemon`. Tiếp theo, mở View Page Source của `/ssr` và `/ssg`, tìm `data-pokemon-id="25"` để thấy dữ liệu đã có sẵn trong HTML gốc. Trong IDE, đối chiếu `force-dynamic` ở `app/ssr/page.tsx` với `force-static` ở `app/ssg/page.tsx` (lưu ý: so từ HTML gốc, không suy ngược từ DOM sau khi JS đã chạy).
+**Demo (khoảng 2 phút):** Mở `/csr`, bật Network và lọc **Fetch/XHR** để chỉ rõ request `/api/pokemon`. Tiếp theo mở `/ssr` và `/ssg`, mở **View Page Source**, tìm `data-pokemon-id="25"` để thấy dữ liệu đã nằm sẵn trong HTML gốc. Mở `/visualizer` hoặc IDE đối chiếu `force-dynamic` ở `app/ssr/page.tsx` với `force-static` ở `app/ssg/page.tsx`.
 
-### Slide 9 · Chọn CSR, SSR, SSG khi nào? · 5:45–6:25
+### Slide 9 · Chọn CSR, SSR, SSG khi nào? · 6:10–6:45
 
-**Nói:** “Vậy trong dự án thực tế nên chọn thế nào? Nội dung chung, ít đổi thì ưu tiên SSG; trang cần HTML mới theo từng request hoặc theo quyền người dùng thì chọn SSR; còn phần dữ liệu tải sau hoặc giao diện nhiều tương tác thì dùng CSR. Một ứng dụng hoàn toàn có thể phối hợp cả ba.”
+**Nói:** “Tóm gọn tiêu chí lựa chọn trong dự án: nội dung công khai ít đổi thì ưu tiên SSG; trang bắt buộc HTML mới từng request hoặc phụ thuộc phiên đăng nhập thì dùng SSR; còn vùng giao diện tương tác nặng sau khi trang đã lên khung thì chọn CSR. Thực tế một ứng dụng kết hợp linh hoạt cả ba.”
 
-### Slide 10 · Server và Client Components · 6:25–7:00
+### Slide 10 · Server & Client Components: Cơ chế, ưu nhược điểm · 6:45–7:25
 
-**Nói:** “Chuyển sang phần hai về kiến trúc React. Server Component chạy trên máy chủ, giúp đọc dữ liệu trực tiếp mà không gửi phần mã đó xuống trình duyệt. Client Component có mã chạy ở trình duyệt để xử lý state, sự kiện bấm/nhập và Web API. Nhớ giúp mình: đây là ranh giới mã chạy ở đâu, còn SSR nói về thời điểm tạo HTML.”
+**Nói:** “Chuyển sang trục thứ hai là Server và Client Components trong React. Server Component chạy hoàn toàn trên máy chủ, đọc trực tiếp dữ liệu, giữ bí mật và gửi 0 KB JavaScript xuống trình duyệt. Client Component dùng chỉ thị `'use client'` để xử lý state, sự kiện bấm/nhập và Web API, nhưng đổi lại phải đóng gói mã JS gửi cho browser. Nguyên tắc là chỉ đặt `'use client'` đúng ở nút bấm, form hoặc vùng lọc tương tác.”
 
-### Slide 11 · Khi nào dùng Server/Client? · 7:00–8:25
+### Slide 11 · Cây thành phần & Demo Server/Client · 7:25–8:45
 
-**Nói:** “Nguyên tắc gọn nhất là giữ việc đọc dữ liệu, giữ bí mật và phần hiển thị tĩnh ở Server Component. Chỉ gắn `'use client'` cho phần thật sự cần state hoặc tương tác người dùng. Ranh giới client càng nhỏ thì lượng JavaScript gửi xuống trình duyệt càng nhẹ. Mình xem ví dụ ở route `/components`.”
+**Nói:** “Nhìn vào cây component thực tế: component trang đọc dữ liệu vẫn nằm trên Server, còn phần thanh tìm kiếm và lọc hệ mới đánh dấu `'use client'`. Ranh giới client càng nhỏ thì dung lượng JS gửi xuống trình duyệt càng nhẹ. Mình kiểm chứng trực tiếp ở route `/components`.”
 
-**Demo (khoảng 1 phút):** Mở `/components` cùng `app/components/page.tsx` và `components/pokedex-filter.tsx`. Chỉ phần `getPokemon()` chạy trên server và chỉ thị `'use client'` đặt ở component lọc. Thử gõ tên vào ô tìm kiếm để minh họa phần tương tác chạy ngay tại trình duyệt.
+**Demo (khoảng 1 phút):** Mở `/components` cùng `app/components/page.tsx` và `components/pokedex-filter.tsx`. Chỉ rõ `getPokemon()` chạy trên server và `'use client'` chỉ nằm ở `PokedexFilter`. Gõ tìm kiếm để minh họa phần tương tác chạy mượt trên client.
 
-### Slide 12 · Hydration · 8:25–8:50
+### Slide 12 · Hydration: gắn tương tác vào HTML · 8:45–9:15
 
-**Nói:** “Một nhầm lẫn hay gặp là thấy Client Component thì nghĩ là chỉ có CSR. Thực tế ở bước Hydration, HTML được tạo sẵn từ server (qua SSR hoặc SSG) sẽ hiện lên trước để người dùng nhìn thấy, sau đó React mới tải JS và gắn xử lý sự kiện vào. Nghĩa là Client Component vẫn có thể có HTML ban đầu.”
+**Nói:** “Một điểm dễ nhầm là cứ Client Component thì chỉ có CSR. Thực tế nhờ bước Hydration, HTML của cả Server và Client Component vẫn có thể được SSR/SSG dựng sẵn từ server để hiển thị sớm; sau đó React mới tải JS và gắn bộ lắng nghe sự kiện vào các nút bấm trên trình duyệt.”
 
-### Slide 13 · Core Web Vitals · 8:50–9:30
+### Slide 13 · Core Web Vitals: LCP, INP/TBT và CLS · 9:15–10:00
 
-**Nói:** “Phần ba đi vào đo lường và tối ưu hiệu năng qua ba chỉ số Core Web Vitals. LCP đo lúc nội dung lớn nhất xuất hiện, mốc tốt dưới 2,5 giây. INP đo độ trễ phản hồi khi người dùng thao tác, mốc tốt dưới 200 mili giây. CLS đo độ giật, xô lệch bố cục ngoài ý muốn, cần dưới 0,1 ở phân vị 75.”
+**Nói:** “Sang Phần hai về chỉ số và tối ưu. Trải nghiệm người dùng được lượng hóa qua ba chỉ số Core Web Vitals. LCP đo lúc nội dung lớn nhất xuất hiện, ngưỡng tốt dưới 2,5 giây. INP đo độ trễ phản hồi khi người dùng thao tác, ngưỡng tốt dưới 200 ms — lưu ý khi đo tải trang bằng Lighthouse (Lab), mình dùng chỉ số TBT để phản ánh mức tắc luồng chính trước khi tương tác. Cuối cùng CLS đo độ xô lệch bố cục, cần giữ dưới 0,1.”
 
-### Slide 14 · Core Web Vitals: cách cải thiện · 9:30–10:15
+### Slide 14 · Lab Data và Field Data: đo khi nào? · 10:00–10:35
 
-**Nói:** “Muốn cải thiện ba chỉ số này, cần đánh đúng nguyên nhân của từng chỉ số. Với LCP: tối ưu phản hồi server, font và ưu tiên tải ảnh chính. Với INP: giảm hoặc chia nhỏ các tác vụ JS chạy lâu trên luồng chính. Với CLS: luôn khai báo kích thước ảnh và giữ chỗ trước cho nội dung sắp tải.”
+**Nói:** “Mình cũng tách rõ hai nguồn số liệu: Lab Data đo bằng Lighthouse trong điều kiện mô phỏng chuẩn hóa giúp so sánh công bằng trước và sau mỗi lần sửa code, và đây là phạm vi demo hôm nay. Khi đưa sản phẩm lên production thật, team cần thu thêm Field Data qua CrUX hoặc thư viện `web-vitals` để theo dõi INP, LCP và CLS thực tế từ thiết bị người dùng.”
 
-### Slide 15 · Lab Data và Field Data: đo khi nào? · 10:15–10:50
+### Slide 15 · Đo Lighthouse trên bản production · 10:35–11:10
 
-**Nói:** “Trước khi xem bảng đo, mình phân biệt rõ hai nguồn dữ liệu. Lab data là đo trong môi trường mô phỏng có kiểm soát như Lighthouse hay DevTools — giúp lặp lại công bằng để so sánh CSR, SSR, SSG, và đây là phạm vi demo hôm nay. Còn Field data (như CrUX hay RUM qua `web-vitals`) thu từ thiết bị và mạng thật của người dùng; khi chạy production thật cần kết hợp thêm Field data để đo chính xác INP ở p75.”
+**Nói:** “Để phép đo không bị sai lệch, toàn bộ benchmark phải chạy trên bản build production, giữ cùng dữ liệu, cùng thiết bị mô phỏng mobile và đo lặp tối thiểu 3 lượt lấy trung vị. Sáu chỉ số mình đối chiếu xuyên suốt là: điểm Performance, FCP, LCP, CLS, TBT và dung lượng JavaScript truyền qua mạng.”
 
-### Slide 16 · Điều kiện benchmark · 10:50–11:30
+### Slide 16 · Demo 1 · Kết quả Lighthouse: CSR vs SSR vs SSG · 11:10–12:30
 
-**Nói:** “Khi chạy benchmark trong lab, nguyên tắc quan trọng nhất là cùng một hệ quy chiếu: phải đo trên bản build production, giữ cùng dữ liệu, thiết bị và điều kiện mạng, đo lặp lại nhiều lượt rồi lấy trung vị. Lưu ý là phép đo tải trang như Lighthouse thu được LCP, CLS và TBT; còn INP đòi hỏi phiên có tương tác thật.”
+**Nói:** “Trên cùng một trang Pokédex 9 loài, đây là kết quả đo thực tế ngày 27/11 bằng Lighthouse. CSR tốn khoảng 183,6 kB JS (15 request), TBT 121 ms và LCP 758 ms. Trong khi đó SSR và SSG giảm xuống còn 139,3 kB JS (10 request), TBT chỉ còn 101 ms và 80 ms, điểm Performance đạt 99–100. Mình mở tab `/benchmark` để xem chi tiết từng chỉ số.”
 
-### Slide 17 · Đọc kết quả · 11:30–12:55
+**Demo (khoảng 1 phút):** Mở `/benchmark`, đối chiếu biểu đồ LCP và bảng tổng hợp giữa `/csr`, `/ssr` và `/ssg`. Giải thích vì sao CSR tốn nhiều JS và nhiều request hơn (tải thêm TanStack Query và gọi `/api/pokemon`), còn vì sao trên fixture đọc tại chỗ thì SSR đang có FCP/LCP rất tốt (607 ms).
 
-**Nói:** “Bảng này giúp mình đọc nhanh bốn cột đo được: LCP cao nghĩa là nội dung chính hiện chậm; CLS cao là bố cục bị nhảy; TBT cao nghĩa là luồng chính bị JS chặn lâu lúc tải trang; còn JS KB phản ánh chi phí tải mã xuống trình duyệt. Bây giờ mình mở màn hình `/benchmark` để xem số liệu đo thực tế.”
+### Slide 17 · Giảm JavaScript ban đầu & Lazy load · 12:30–13:30
 
-**Demo:** Mở `/benchmark`, chỉ mốc thời gian đo và số lượt chạy. Cuộn tới bảng chỉ số đầy đủ để đọc LCP, TBT, CLS và JavaScript transfer size. Nêu ví dụ từ báo cáo ngày 25/11: LCP của `/csr`, `/ssr`, `/ssg` lần lượt khoảng 760, 608, 759 ms; JS transfer lần lượt khoảng 187, 142, 142 kB. Nhấn mạnh đây là số đo lab ở điều kiện bản build đó; muốn biết danh sách Pokédex sẵn sàng khi nào cần xem thêm waterfall.
+**Nói:** “Từ kết quả đo, mình bước vào nhóm giải pháp tối ưu. Nhóm thứ nhất là giảm JS ban đầu và Lazy load. Thay vì bọc `'use client'` tràn lan và import đồng bộ các widget dữ liệu lớn ngay khi mở trang, mình giữ khung chính ở Server Component, tách widget nặng bằng `next/dynamic(..., { ssr: false })` chỉ tải khi bấm mở, và dùng `IntersectionObserver` để hoãn ảnh phía dưới màn hình ở `/lazy-load`. Lưu ý quan trọng: không bao giờ lazy load phần tử chính ở màn hình đầu kẻo hỏng LCP.”
 
-### Slide 18 · Lazy load: chỉ tải khi cần · 12:55–13:40
+**Demo (khoảng 1 phút 15 giây):** Mở tab Network (lọc **JS**, bật **Disable cache**). Truy cập `/labs/js-before` để thấy bundle nặng chứa dữ liệu 151 loài Kanto tải ngay lập tức; chuyển sang `/labs/js-after` tải lại thấy tổng JS ban đầu nhẹ đi đáng kể, sau đó bấm nút **Tải và mở phân tích 151 Pokémon** để thấy chunk JS mới được nạp động. Nếu kịp, lướt nhanh `/lazy-load` cuộn trong khung ảnh để thấy ảnh chỉ tải khi lọt vào vùng nhìn thấy.
 
-**Nói:** “Sau bước đo, mình đi qua ba kỹ thuật tối ưu phổ biến. Đầu tiên là Lazy load: hoãn tải những tài nguyên chưa cần ở màn đầu như ảnh phía dưới hoặc biểu đồ nặng chỉ mở khi bấm. Cách này giảm chi phí tải lúc đầu, nhưng tránh lazy load phần tử chính ở ngay đầu trang kẻo làm chậm LCP.”
+### Slide 18 · Tối ưu ảnh & Tải sớm banner (`priority`) · 13:30–14:35
 
-### Slide 19 · Memo: giảm công việc lặp lại · 13:40–14:25
+**Nói:** “Kỹ thuật thứ hai nhắm thẳng vào LCP và CLS là tối ưu ảnh và tải sớm banner. Ảnh lớn đầu trang không nên để `loading=\"lazy\"` chờ JS chạy xong mới tải. Khi chuyển sang định dạng WebP, khai báo đủ `width`/`height` giữ khung chống CLS, và gắn `priority` trên `<Image>`, Next.js tự chèn thẻ `<link rel=\"preload\" as=\"image\">` ngay trong HTML đầu tiên giúp banner được tải song song trước cả script.”
 
-**Nói:** “Thứ hai là Memo hóa: `React.memo` giúp bỏ qua lượt render lại khi props không đổi, còn `useMemo` ghi nhớ kết quả phép tính tốn kém giữa các lần render. Tuy nhiên phép so sánh props cũng có chi phí và nếu state hoặc context đổi thì component vẫn render lại. Vì vậy hãy đo trước rồi mới áp dụng ở nơi thực sự tốn thời gian.”
+**Demo (khoảng 1 phút):** Mở DevTools Network trên `/labs/banner-before` và `/labs/banner-after`. Chỉ vào thứ tự waterfall: ở `banner-before`, ảnh PNG nặng (989 KB) chỉ bắt đầu tải sau khi JS hydrate; sang `banner-after`, `banner-kanto.webp` (30,6 KB) có `fetchpriority="high"` và xuất hiện ngay đầu danh sách request sau HTML.
 
-### Slide 20 · Server state: cache và đồng bộ · 14:25–15:10
+### Slide 19 · Cache đa tầng & Quản lý Server State · 14:35–15:25
 
-**Nói:** “Thứ ba là quản lý Server state: dữ liệu nằm ở server và có thể đổi độc lập với màn hình hiện tại. Phía client chỉ giữ một bản sao nên phải xử lý đủ trạng thái đang tải, khi lỗi và làm mới khi cache cũ. Các công cụ như TanStack Query dùng `queryKey` để nhận diện, `staleTime` để kiểm soát độ mới và refetch khi cần đồng bộ.”
+**Nói:** “Kỹ thuật thứ ba là Cache đa tầng và quản lý Server State. Ở tầng mạng và build, SSG cùng header `Cache-Control` giúp tái sử dụng HTML/ảnh nhanh chóng. Còn với dữ liệu API lấy trên trình duyệt (Server State), dữ liệu nằm ở server và có thể cũ hoặc lỗi, nên mình dùng TanStack Query quản lý cache trong bộ nhớ qua `queryKey`, cấu hình `staleTime` để không gọi trùng lặp và xử lý rõ loading/error.”
 
-### Slide 21 · Lazy load, memo, server state · 15:10–18:20
+### Slide 20 · Memo hóa & Demo Cache / Memo · 15:25–16:50
 
-**Nói:** “Mình vừa tổng hợp ba hướng tối ưu: hoãn tải với Lazy load, tránh tính lặp với `React.memo`, và quản lý cache cho Server state. Bây giờ mình mở trực tiếp `/lazy-load` và `/performance` để quan sát từng cơ chế trên tab Network và bộ đếm render.”
+**Nói:** “Kỹ thuật thứ tư là Memo hóa bằng `React.memo` và `useMemo` nhằm bỏ qua render hoặc tính toán lặp lại khi props không đổi — tất nhiên chỉ áp dụng ở nơi đã đo thấy tốn chi phí vì nếu state hay context đổi thì component vẫn render lại. Mình mở `/performance` để kiểm chứng trực tiếp cả `React.memo` lẫn cache Server State của TanStack Query.”
 
-**Demo A (khoảng 50 giây):** Mở `/lazy-load`, trong Network lọc **Img**, bật **Disable cache** và tải lại. Cuộn **bên trong khung thư viện ảnh**: `rendering-lab.webp` và `benchmark-lab.webp` chỉ mới bắt đầu tải khi ảnh lọt vào khung nhìn.
+**Demo (khoảng 1 phút 15 giây):** Trên `/performance`, bấm **Tăng bộ đếm cha** hai lần: bộ đếm của component thường tăng, ô `React.memo` giữ nguyên; sau đó bấm **Đổi khu khảo sát** để thấy khi props đổi thì cả hai cập nhật. Tiếp theo ở mục Server State bên dưới, bấm **Ẩn danh sách** rồi **Mở lại danh sách** trong vòng 60 giây — không có request mới trên Network; bấm **Gọi lại API** hoặc **Mô phỏng lỗi API** để xem xử lý lỗi 503.
 
-**Demo B (khoảng 45 giây):** Mở `/performance`, bấm **Tăng bộ đếm cha** hai lần — chỉ số commit của component thường tăng, ô `React.memo` giữ nguyên. Sau đó bấm **Đổi khu khảo sát**: props đổi nên cả hai ô cùng cập nhật.
+### Slide 21 · Demo 2 · Số liệu Lighthouse Trước / Sau sửa code · 16:50–18:10
 
-**Demo C (khoảng 60 giây):** Vẫn trên `/performance`, kéo xuống mục **Server state với TanStack Query**. Khi danh sách tải xong, bấm **Ẩn danh sách** rồi **Mở lại danh sách** trong vòng 60 giây: Network không phát sinh request mới vì lấy từ cache. Bấm **Gọi lại API** để chủ động fetch lại, và nếu còn thời gian có thể bấm **Mô phỏng lỗi API** (HTTP 503) rồi **Khôi phục API**.
+**Nói:** “Đây là kết quả tổng hợp đo bằng Lighthouse để thấy rõ tác động sau khi sửa code. Ở thí nghiệm tối ưu tải JS (`js-before` sang `js-after`), dung lượng JS truyền qua mạng giảm 42% từ 255,4 kB xuống 148,4 kB, TBT giảm mạnh 75% từ 370 ms xuống 91 ms, đẩy điểm Performance từ 91 lên 100. Còn ở thí nghiệm ảnh banner `priority`, cùng dung lượng JS khoảng 146 kB nhưng LCP giảm từ 2.166 ms xuống 1.808 ms (nhanh hơn 17%, giữ CLS = 0 và đạt 100 điểm Performance).”
 
-### Slide 22 · Vấn đề khi không viết test · 18:20–19:00
+**Demo (khoảng 1 phút):** Mở `/benchmark#before-after`, chỉ trực tiếp hai bảng so sánh **Trước và Sau** đủ 6 chỉ số `Performance`, `LCP`, `CLS`, `TBT`, `FCP` và `JavaScript`, kèm hai nút mở nhanh bản Trước/Sau để đối chiếu trực tiếp.
 
-**Nói:** “Phần cuối cùng là kiểm thử component. Nếu dự án không có test tự động, mỗi lần sửa code mình lại phải tự bấm tay kiểm tra từng chức năng cũ. Việc này vừa tốn công, vừa dễ sót regression bug, khiến cả team thiếu tự tin mỗi khi cần refactor.”
+### Slide 22 · Chất lượng code: Vấn đề khi không viết test · 18:10–18:50
 
-### Slide 23 · Component Testing là gì? · 19:00–19:40
+**Nói:** “Tối ưu hiệu năng tốt rồi nhưng nếu code dễ gãy khi chỉnh sửa thì hiệu năng cũng không bền vững. Khi dự án thiếu test tự động, mỗi lần sửa code team phải bấm tay kiểm tra lại từ đầu, dễ sót regression bug và rất ngại refactor.”
 
-**Nói:** “Component Testing là viết test tự động cho một phần giao diện dựa trên hành vi người dùng quan sát và thao tác được — từ nội dung render, tác động của props, gõ chữ, bấm nút, đến thông báo lỗi validation hay trạng thái đang tải. Mục tiêu là xác nhận đúng điều người dùng thấy.”
+### Slide 23 · Component Testing là gì? · 18:50–19:25
 
-### Slide 24 · Công cụ Component Testing · 19:40–20:20
+**Nói:** “Component Testing là viết test tự động kiểm tra hành vi của một phần giao diện dựa trên đúng thứ người dùng nhìn thấy và thao tác: từ render nội dung, tác động của props, nhập liệu, bấm nút cho tới các thông báo lỗi validation.”
 
-**Nói:** “Trong demo này mình kết hợp ba công cụ gọn nhẹ: Vitest để chạy test và báo kết quả; React Testing Library để render và tìm phần tử trên giao diện như cách người dùng nhìn; và User Event để mô phỏng thao tác gõ, bấm sát thực tế. Mình tập trung vào giá trị kiểm thử, không đi sâu cấu hình.”
+### Slide 24 · Công cụ Component Testing · 19:25–20:00
 
-### Slide 25 · Nguyên tắc viết test: AAA · 20:20–21:00
+**Nói:** “Trong demo này mình dùng ba công cụ tiêu chuẩn: Vitest để chạy và báo cáo kết quả test; React Testing Library để render và truy vấn UI theo vai trò truy cập; và User Event để mô phỏng thao tác gõ phím, bấm nút sát hành vi thật.”
 
-**Nói:** “Để bài test dễ đọc và dễ truy lỗi, mình viết theo cấu trúc ba bước AAA. Arrange: chuẩn bị dữ liệu và render component. Act: thực hiện thao tác như người dùng. Assert: kiểm tra kết quả hiển thị. Khi một test thất bại, nhìn vào bước Assert sẽ thấy ngay giao diện đang sai ở đâu.”
+### Slide 25 · Nguyên tắc viết test: AAA · 20:00–20:35
 
-### Slide 26 · Kết quả demo: test phát hiện lỗi · 21:00–22:45
+**Nói:** “Mỗi bài test giữ cấu trúc ba bước AAA rõ ràng: Arrange chuẩn bị dữ liệu và render component, Act thực hiện thao tác như người dùng, và Assert kiểm tra kết quả hiển thị trên giao diện. Cấu trúc này giúp nhìn vào test thất bại là biết ngay giao diện đang sai ở đâu.”
 
-**Nói:** “Bây giờ mình xem kết quả chạy hai test case cho sổ nhiệm vụ: tìm kiếm và tạo mới. Luồng tìm kiếm đang đạt, còn luồng tạo mới đang thất bại có chủ đích vì form cho phép lưu tên rỗng trong khi test yêu cầu báo lỗi bắt buộc. Đây là giá trị thực tế của test: phát hiện ngay lỗi validation mà kiểm tra tay dễ bỏ sót.”
+### Slide 26 · Kết quả demo: Test phát hiện lỗi · 20:35–22:00
 
-**Demo:** Mở `/tests`, bấm **Chạy tất cả test** để thấy kết quả **1 đạt, 1 thất bại**. Mở chi tiết case tạo nhiệm vụ đọc thông báo lỗi, rồi đối chiếu với ba bước Arrange, Act, Assert trong `tests/tasks.test.tsx` (hoặc chạy `pnpm test` ở terminal; giữ nguyên lỗi cố ý trong lúc trình bày).
+**Nói:** “Bây giờ mình chạy bộ test sổ nhiệm vụ gồm hai luồng: tìm kiếm và tạo mới. Kết quả cho thấy test tìm kiếm đạt, còn test tạo mới thất bại đúng như thiết kế để minh họa khả năng bắt bug: form đang cho lưu tên rỗng trong khi test yêu cầu thông báo lỗi bắt buộc.”
 
-### Slide 27 · Q&A · Hỏi đáp & Thảo luận · 22:45–24:00
+**Demo (khoảng 1 phút 15 giây):** Mở `/tests`, bấm **Chạy tất cả test** để thấy kết quả **1 đạt, 1 thất bại**. Mở chi tiết case tạo nhiệm vụ và đối chiếu ba bước AAA trong `tests/tasks.test.tsx`.
 
-**Nói:** “Phần trình bày của tụi mình xin phép dừng ở đây. Cảm ơn mọi người đã theo dõi — trên màn hình có ba câu hỏi gợi mở về ranh giới SSR/Client, theo dõi Field data ngoài production và ưu tiên viết test; mời cả nhóm cùng trao đổi và đặt thêm câu hỏi ạ.”
+### Slide 27 · Tổng kết bài toán: Hiệu năng & Chất lượng code · 22:00–22:50
+
+**Nói:** “Để khép lại toàn bộ mạch bài, đây là bức tranh tổng hợp bốn bước giải bài toán thực tế: thứ nhất chọn đúng chiến lược render và thu gọn ranh giới Client; thứ hai áp dụng các biện pháp tối ưu như giảm JS bằng `dynamic()`, ưu tiên banner `priority`/WebP, cache đa tầng và `memo`; thứ ba kiểm chứng lại bằng số liệu Lighthouse trước và sau kèm Field data ở production; và thứ tư bảo vệ chất lượng code khi bảo trì bằng Component Test.”
+
+### Slide 28 · Q&A · Hỏi đáp & Thảo luận · 22:50–24:00
+
+**Nói:** “Phần trình bày của tụi mình xin phép dừng ở đây. Cảm ơn mọi người đã theo dõi — trên màn hình là ba câu hỏi gợi mở liên quan đến chọn Render và thu gọn JS, theo dõi Field data bên cạnh Lighthouse Before/After, và ưu tiên viết Component Test. Mời cả nhóm cùng đặt câu hỏi và thảo luận ạ.”
 
 ## Khi demo không ra đúng dấu vết
 
-- Nếu Network không hiện request ảnh lazy load, tải lại `/lazy-load` khi DevTools đã mở, bật **Disable cache**, rồi cuộn *trong khung ảnh*, không cuộn toàn trang. Ảnh đầu tiên có thể tải ngay vì đã ở vùng nhìn thấy.
-- Nếu CSR hết skeleton quá nhanh, dùng throttling trong Network và tải trực tiếp URL.
-- Nếu `/tests` trả lỗi khi chạy, kiểm tra đang mở qua `localhost` hoặc `127.0.0.1`, dependency đã cài và server chạy trên máy local. Trạng thái kỳ vọng của demo hiện tại vẫn là một case thất bại có chủ đích.
-- Nếu báo cáo benchmark không đọc được, dùng `reports/benchmark.md` đã lưu. Không dùng số của môi trường khác để thay cho kết quả đang demo.
+- Nếu DevTools không hiện lại chunk `dynamic` hoặc ảnh ở `/lazy-load`, nhớ bật **Disable cache** và tải lại trang khi DevTools đã mở; riêng `/lazy-load` cần cuộn *bên trong khung ảnh*.
+- Nếu CSR hết skeleton quá nhanh trên local, dùng throttling trong Network (ví dụ *Slow 3G*) để thấy rõ chuỗi request và waterfall banner `before` vs `after`.
+- Nếu `/tests` trả lỗi khi chạy, kiểm tra server đang chạy qua `127.0.0.1` hoặc `localhost` và dependency đã cài đầy đủ. Trạng thái kỳ vọng vẫn là 1 đạt, 1 thất bại có chủ đích.
+- Nếu cần đối chiếu lại số liệu sau khi sửa code, chạy `pnpm benchmark` (cần Chrome/Chromium trên máy local).
 
 ## Tài liệu đối chiếu
 
 - [Next.js: Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components)
-- [Next.js: Client-side Rendering](https://nextjs.org/docs/pages/building-your-application/rendering/client-side-rendering)
-- [Next.js: Static and Dynamic Rendering](https://nextjs.org/learn/dashboard-app/static-and-dynamic-rendering)
+- [Next.js: Image Optimization & `priority`](https://nextjs.org/docs/app/api-reference/components/image)
 - [Next.js: Lazy Loading](https://nextjs.org/docs/app/guides/lazy-loading)
-- [Next.js: Route Segment Config](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config)
-- [web.dev: Core Web Vitals](https://web.dev/articles/vitals)
-- [React: memo](https://react.dev/reference/react/memo)
-- [React: useMemo](https://react.dev/reference/react/useMemo)
-- [TanStack Query: Important Defaults](https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults)
-- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- [Web Vitals](https://web.dev/articles/vitals)
+- [Lighthouse Performance Scoring](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring)

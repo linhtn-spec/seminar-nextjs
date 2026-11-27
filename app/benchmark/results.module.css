@@ -61,9 +61,20 @@
 .fullTable td { white-space: nowrap; }
 
 @media (max-width: 1120px) {
-  .grid { grid-template-columns: 1fr; }
+  .grid, .compareGrid { grid-template-columns: 1fr; }
 }
 @media (max-width: 410px) {
   .barRow { grid-template-columns: 54px minmax(0, 1fr) 68px; gap: 7px; }
   .barValue { font-size: 1rem; }
 }
+
+.compareGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.compareCard { padding: clamp(16px, 2vw, 24px); display: grid; gap: 14px; align-content: start; }
+.compareTable { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.compareTable th, .compareTable td { padding: 8px 6px; border-bottom: 1px solid var(--border); text-align: right; font-variant-numeric: tabular-nums; }
+.compareTable th:first-child { text-align: left; font-weight: 650; }
+.compareTable thead th { font-size: .8rem; color: var(--muted); }
+.deltaGood { display: inline-block; padding: 2px 7px; border-radius: 5px; font-weight: 700; font-size: .8rem; background: #e4f2e7; color: #20623a; white-space: nowrap; }
+.deltaNeutral { display: inline-block; padding: 2px 7px; border-radius: 5px; font-weight: 650; font-size: .8rem; background: #efeeea; color: #55524d; white-space: nowrap; }
+.pairLinks { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); }
+

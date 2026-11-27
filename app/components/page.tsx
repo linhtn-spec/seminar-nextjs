@@ -36,4 +36,4 @@ export default async function Page() {
       <p>Browser tải mã bộ lọc, danh sách trong client graph và các phụ thuộc. Mã đọc tệp JSON chạy trên server.</p>
     </details>
   </>
-}
+} 

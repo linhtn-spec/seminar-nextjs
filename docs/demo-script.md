@@ -1,14 +1,17 @@
 # Kịch bản thuyết trình · Rendering, tối ưu hiệu năng và kiểm thử component
 
-**Thời lượng gợi ý:** 23–25 phút trình bày, sau đó hỏi đáp. Dùng deck `Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx` ở thư mục gốc, cạnh `README.md`. Nội dung bám sát cấu trúc **Mở đầu → Phần 1: Rendering → Phần 2: Chỉ số & Tối ưu (gồm đo Lighthouse Before/After & Component Test) → Q&A**. Phần **Nói** được viết theo văn phong nói miệng tự nhiên, có câu nối chuyển ý mượt giữa các slide và giữa phần lý thuyết với demo (`Slide 8, 11, 16, 17, 18, 20, 21, 26`).
+**Thời lượng gợi ý:** 23–25 phút trình bày, sau đó hỏi đáp. Dùng deck `Seminar_05_Frontend_Roadmap_Tieng_Viet_Da_Chinh_Sua.pptx` ở thư mục gốc, cạnh `README.md`. Nội dung bám sát cấu trúc **Mở đầu → Phần 1: Rendering → Phần 2: Chỉ số & Tối ưu (gồm đo Lighthouse Before/After & Component Test) → Q&A**. Phần **Nói** được viết theo văn phong nói miệng tự nhiên, có câu nối chuyển ý mượt giữa các slide; phần **Demo** gắn link trực tiếp tới ứng dụng chạy tại [http://127.0.0.1:4173](http://127.0.0.1:4173) ở các slide có nhãn **DEMO** (`8, 11, 16, 17, 18, 20, 21, 26`).
 
 ## Chuẩn bị trước buổi nói
 
-1. Từ thư mục project, chạy `pnpm build`, rồi `pnpm exec next start --hostname 127.0.0.1 -p 4173`. Dùng `http://127.0.0.1:4173` làm địa chỉ gốc. Bắt buộc dùng production build khi đối chiếu HTML ban đầu, thẻ `<link rel="preload">` và tab Network.
-2. Mở sẵn các tab `/csr`, `/ssr`, `/ssg`, `/components`, `/benchmark`, `/labs/js-before`, `/labs/js-after`, `/labs/banner-before`, `/labs/banner-after`, `/lazy-load`, `/performance`, `/tests`. Tất cả đều có sẵn trên menu điều hướng bên trái.
+1. Từ thư mục project, chạy `pnpm build`, rồi `pnpm exec next start --hostname 127.0.0.1 -p 4173`. Dùng [http://127.0.0.1:4173](http://127.0.0.1:4173) làm địa chỉ gốc. Bắt buộc dùng production build khi đối chiếu HTML ban đầu, thẻ `<link rel="preload">` và tab Network.
+2. Mở sẵn các trang demo (hoặc bấm trực tiếp từ [Trang chủ](http://127.0.0.1:4173/) / thanh link dưới các slide **DEMO**):
+   - Rendering & Components: [/csr](http://127.0.0.1:4173/csr) · [/ssr](http://127.0.0.1:4173/ssr) · [/ssg](http://127.0.0.1:4173/ssg) · [/visualizer](http://127.0.0.1:4173/visualizer) · [/components](http://127.0.0.1:4173/components)
+   - Benchmark & Tối ưu: [/benchmark](http://127.0.0.1:4173/benchmark) · [/benchmark#before-after](http://127.0.0.1:4173/benchmark#before-after) · [/labs/js-before](http://127.0.0.1:4173/labs/js-before) · [/labs/js-after](http://127.0.0.1:4173/labs/js-after) · [/labs/banner-before](http://127.0.0.1:4173/labs/banner-before) · [/labs/banner-after](http://127.0.0.1:4173/labs/banner-after) · [/lazy-load](http://127.0.0.1:4173/lazy-load) · [/performance](http://127.0.0.1:4173/performance)
+   - Kiểm thử: [/tests](http://127.0.0.1:4173/tests)
 3. Mở Chrome DevTools, giữ tab Network; bật **Disable cache** khi demo lần tải mới. Trong IDE, mở sẵn `app/ssr/page.tsx`, `app/ssg/page.tsx`, `app/components/page.tsx`, `components/pokedex-filter.tsx`, `app/labs/js-after/page.tsx`, `app/labs/banner-after/page.tsx`, `tests/tasks.test.tsx`.
-4. **Test tạo nhiệm vụ đang thất bại có chủ đích.** Form hiện cho lưu tên rỗng, còn test vẫn đòi thông báo “Tên nhiệm vụ là bắt buộc.” Khi chạy `pnpm test` hoặc trang `/tests`, kết quả dự kiến là 1 đạt, 1 thất bại. Đừng trình bày đây là một bộ test đã xanh.
-5. Bảng số liệu trên `/benchmark` và trong slide được đo thực tế từ bản production ngày **27/11/2026** bằng `pnpm benchmark` (Chrome headless, Lighthouse 13.6.0, mobile preset). Nếu sửa code hoặc đổi máy đo, chạy lại `pnpm benchmark` trước khi đọc số mới.
+4. **Test tạo nhiệm vụ đang thất bại có chủ đích.** Form hiện cho lưu tên rỗng, còn test vẫn đòi thông báo “Tên nhiệm vụ là bắt buộc.” Khi chạy `pnpm test` hoặc mở [/tests](http://127.0.0.1:4173/tests), kết quả dự kiến là 1 đạt, 1 thất bại. Đừng trình bày đây là một bộ test đã xanh.
+5. Bảng số liệu trên [/benchmark](http://127.0.0.1:4173/benchmark) và trong slide được đo thực tế từ bản production ngày **27/11/2026** bằng `pnpm benchmark` (Chrome headless, Lighthouse 13.6.0, mobile preset). Nếu sửa code hoặc đổi máy đo, chạy lại `pnpm benchmark` trước khi đọc số mới.
 
 ## Lời dẫn theo slide
 
@@ -44,7 +47,7 @@
 
 **Nói:** “Nhìn chung, cùng một dữ liệu nhưng ba cách làm chỉ khác nhau ở thời điểm nội dung hình thành: CSR đợi trình duyệt chạy JS, SSR tạo theo từng request, còn SSG tạo sẵn lúc build. Để không dừng ở lý thuyết, bây giờ mình mở ngay ứng dụng Pokédex Lab để kiểm chứng tận mắt xem HTML ban đầu và tab Network của ba trang này khác nhau thế nào.”
 
-**Demo (khoảng 2 phút):** Mở `/csr`, bật Network lọc **Fetch/XHR** và tải lại để chỉ rõ request `/api/pokemon` chỉ chạy sau khi có JS. Sang `/ssr` và `/ssg`, mở **View Page Source** tìm `data-pokemon-id="25"` để chứng minh dữ liệu đã nằm sẵn trong HTML gốc ngay trước khi JS chạy. Sau đó mở `/visualizer` hoặc IDE đối chiếu nhanh `force-dynamic` ở `app/ssr/page.tsx` và `force-static` ở `app/ssg/page.tsx`.
+**Demo (khoảng 2 phút):** Mở [/csr](http://127.0.0.1:4173/csr), bật Network lọc **Fetch/XHR** và tải lại để chỉ rõ request `/api/pokemon` chỉ chạy sau khi có JS. Sang [/ssr](http://127.0.0.1:4173/ssr) và [/ssg](http://127.0.0.1:4173/ssg), mở **View Page Source** tìm `data-pokemon-id="25"` để chứng minh dữ liệu đã nằm sẵn trong HTML gốc ngay trước khi JS chạy. Sau đó mở [/visualizer](http://127.0.0.1:4173/visualizer) hoặc IDE đối chiếu nhanh `force-dynamic` ở `app/ssr/page.tsx` và `force-static` ở `app/ssg/page.tsx`.
 
 ### Slide 9 · Chọn CSR, SSR, SSG khi nào? · 6:10–6:45
 
@@ -56,9 +59,9 @@
 
 ### Slide 11 · Cây thành phần & Demo Server/Client · 7:25–8:45
 
-**Nói:** “Để dễ hình dung ranh giới này trong code thật, mọi người nhìn lên cây thành phần trên slide: phần trang cha lấy dữ liệu vẫn giữ ở Server, còn nhánh bộ lọc và tìm kiếm mới gắn `'use client'`. Ranh giới client càng gọn thì ứng dụng càng nhẹ. Mình mở route `/components` để xem cách tách trực tiếp trong code.”
+**Nói:** “Để dễ hình dung ranh giới này trong code thật, mọi người nhìn lên cây thành phần trên slide: phần trang cha lấy dữ liệu vẫn giữ ở Server, còn nhánh bộ lọc và tìm kiếm mới gắn `'use client'`. Ranh giới client càng gọn thì ứng dụng càng nhẹ. Mình mở route [/components](http://127.0.0.1:4173/components) để xem cách tách trực tiếp trong code.”
 
-**Demo (khoảng 1 phút):** Mở `/components` song song với `app/components/page.tsx` và `components/pokedex-filter.tsx`. Chỉ rõ `getPokemon()` chạy trên server và `'use client'` chỉ bao quanh `PokedexFilter`. Gõ tìm kiếm trực tiếp trên màn hình để minh họa phần tương tác chạy mượt tại trình duyệt.
+**Demo (khoảng 1 phút):** Mở [/components](http://127.0.0.1:4173/components) song song với `app/components/page.tsx` và `components/pokedex-filter.tsx`. Chỉ rõ `getPokemon()` chạy trên server và `'use client'` chỉ bao quanh `PokedexFilter`. Gõ tìm kiếm trực tiếp trên màn hình để minh họa phần tương tác chạy mượt tại trình duyệt.
 
 ### Slide 12 · Hydration: gắn tương tác vào HTML · 8:45–9:15
 
@@ -78,21 +81,21 @@
 
 ### Slide 16 · Demo 1 · Kết quả Lighthouse: CSR vs SSR vs SSG · 11:10–12:30
 
-**Nói:** “Áp dụng bộ tiêu chí đó lên cùng trang Pokédex 9 loài, đây là bảng số liệu Lighthouse tụi mình đo được. Có thể thấy ngay CSR tốn khoảng 183,6 kB JS với 15 request, kéo TBT lên 121 ms và LCP ở mức 758 ms. Trong khi đó SSR và SSG giảm xuống còn 139,3 kB JS với 10 request, TBT hạ xuống còn 101 ms và 80 ms, điểm Performance đạt 99–100. Mình mở nhanh trang `/benchmark` để đối chiếu số liệu gốc vừa đo.”
+**Nói:** “Áp dụng bộ tiêu chí đó lên cùng trang Pokédex 9 loài, đây là bảng số liệu Lighthouse tụi mình đo được. Có thể thấy ngay CSR tốn khoảng 183,6 kB JS với 15 request, kéo TBT lên 121 ms và LCP ở mức 758 ms. Trong khi đó SSR và SSG giảm xuống còn 139,3 kB JS với 10 request, TBT hạ xuống còn 101 ms và 80 ms, điểm Performance đạt 99–100. Mình mở nhanh trang [/benchmark](http://127.0.0.1:4173/benchmark) để đối chiếu số liệu gốc vừa đo.”
 
-**Demo (khoảng 1 phút):** Mở `/benchmark`, chỉ vào biểu đồ LCP và bảng tổng quan của CSR, SSR, SSG. Giải thích nhanh: CSR nặng JS và nhiều request hơn vì phải tải thêm TanStack Query và gọi `/api/pokemon`, còn SSR đọc fixture cục bộ tại chỗ nên có FCP/LCP rất thấp (607 ms).
+**Demo (khoảng 1 phút):** Mở [/benchmark](http://127.0.0.1:4173/benchmark), chỉ vào biểu đồ LCP và bảng tổng quan của CSR, SSR, SSG. Giải thích nhanh: CSR nặng JS và nhiều request hơn vì phải tải thêm TanStack Query và gọi `/api/pokemon`, còn SSR đọc fixture cục bộ tại chỗ nên có FCP/LCP rất thấp (607 ms).
 
 ### Slide 17 · Giảm JavaScript ban đầu & Lazy load · 12:30–13:30
 
 **Nói:** “Nhìn vào bảng đo vừa rồi, dễ thấy hai nguyên nhân hay làm tụt điểm Lighthouse là gói JS tải ban đầu quá to và ảnh chính hiện chậm. Trước hết, để trị bệnh nặng JS, mình kết hợp ba bước: giữ phần hiển thị tĩnh ở Server Component, tách các module ít dùng ngay lúc đầu bằng `next/dynamic()` để chỉ tải khi người dùng bấm mở, và dùng lazy load cho những bức ảnh nằm sâu bên dưới màn hình. Một lưu ý cực kỳ quan trọng là tuyệt đối không lazy load phần tử chính ở màn đầu kẻo phản tác dụng lên LCP. Mình xem thử ngay trên trình duyệt cho dễ thấy.”
 
-**Demo (khoảng 1 phút 15 giây):** Mở DevTools tab Network lọc **JS** và bật **Disable cache**. Vào `/labs/js-before` để thấy bundle dữ liệu 151 loài Kanto tải ồ ạt ngay lúc mở trang. Chuyển sang `/labs/js-after` tải lại thấy JS ban đầu gọn hẳn, rồi bấm nút **Tải và mở phân tích 151 Pokémon** để quan sát chunk JS mới được nạp thêm theo nhu cầu. Lướt nhanh sang `/lazy-load`, cuộn bên trong khung thư viện để thấy ảnh phía dưới chỉ tải khi lọt vào màn hình.
+**Demo (khoảng 1 phút 15 giây):** Mở DevTools tab Network lọc **JS** và bật **Disable cache**. Vào [/labs/js-before](http://127.0.0.1:4173/labs/js-before) để thấy bundle dữ liệu 151 loài Kanto tải ồ ạt ngay lúc mở trang. Chuyển sang [/labs/js-after](http://127.0.0.1:4173/labs/js-after) tải lại thấy JS ban đầu gọn hẳn, rồi bấm nút **Tải và mở phân tích 151 Pokémon** để quan sát chunk JS mới được nạp thêm theo nhu cầu. Lướt nhanh sang [/lazy-load](http://127.0.0.1:4173/lazy-load), cuộn bên trong khung thư viện để thấy ảnh phía dưới chỉ tải khi lọt vào màn hình.
 
 ### Slide 18 · Tối ưu ảnh & Tải sớm banner (`priority`) · 13:30–14:35
 
 **Nói:** “Nếu với JS thừa mình phải hoãn lại cho nhẹ trang, thì với bức ảnh banner ngay đầu trang lại cần làm điều ngược lại: ưu tiên tải càng sớm càng tốt. Thay vì để ảnh PNG nặng và tải muộn sau khi JS chạy xong, mình nén ảnh sang WebP gọn hơn tới hơn 95%, khai báo sẵn kích thước khung để giữ CLS bằng 0, và gắn thuộc tính `priority` trên thẻ `<Image>`. Khi đó Next.js tự động chèn preload ngay đầu file HTML để trình duyệt kéo ảnh banner về song song từ những mili giây đầu tiên. Mình mở waterfall Network để kiểm chứng ngay.”
 
-**Demo (khoảng 1 phút):** Mở Network trên `/labs/banner-before` và `/labs/banner-after`. So sánh thứ tự waterfall: bên `banner-before`, file PNG nặng (989 KB) mãi tới sau script mới bắt đầu tải; còn bên `banner-after`, file `banner-kanto.webp` (30,6 KB) được gắn ưu tiên cao và xuất hiện ngay đầu danh sách ngay sau HTML.
+**Demo (khoảng 1 phút):** Mở Network trên [/labs/banner-before](http://127.0.0.1:4173/labs/banner-before) và [/labs/banner-after](http://127.0.0.1:4173/labs/banner-after). So sánh thứ tự waterfall: bên `banner-before`, file PNG nặng (989 KB) mãi tới sau script mới bắt đầu tải; còn bên `banner-after`, file `banner-kanto.webp` (30,6 KB) được gắn ưu tiên cao và xuất hiện ngay đầu danh sách ngay sau HTML.
 
 ### Slide 19 · Cache đa tầng & Quản lý Server State · 14:35–15:25
 
@@ -100,15 +103,15 @@
 
 ### Slide 20 · Memo hóa & Demo Cache / Memo · 15:25–16:50
 
-**Nói:** “Và kỹ thuật tối ưu cuối cùng trong bộ giải pháp là Memo hóa với `React.memo` và `useMemo`. Cơ chế của nó là ghi nhớ kết quả render hoặc phép tính nặng khi đầu vào props không đổi — tất nhiên chỉ nên dùng đúng chỗ thật sự tốn CPU vì phép so sánh cũng có chi phí riêng. Bây giờ mình mở màn hình `/performance` để thử trực tiếp cả bộ đếm render của `React.memo` lẫn cơ chế cache của TanStack Query.”
+**Nói:** “Và kỹ thuật tối ưu cuối cùng trong bộ giải pháp là Memo hóa với `React.memo` và `useMemo`. Cơ chế của nó là ghi nhớ kết quả render hoặc phép tính nặng khi đầu vào props không đổi — tất nhiên chỉ nên dùng đúng chỗ thật sự tốn CPU vì phép so sánh cũng có chi phí riêng. Bây giờ mình mở màn hình [/performance](http://127.0.0.1:4173/performance) để thử trực tiếp cả bộ đếm render của `React.memo` lẫn cơ chế cache của TanStack Query.”
 
-**Demo (khoảng 1 phút 15 giây):** Trên `/performance`, bấm **Tăng bộ đếm cha** hai lần: bộ đếm component thường tăng vọt còn ô dùng `React.memo` đứng yên; sau đó bấm **Đổi khu khảo sát** để thấy props đổi thì cả hai cùng cập nhật. Kéo xuống mục Server State: bấm **Ẩn danh sách** rồi **Mở lại danh sách** trong vòng 60 giây — tab Network không phát sinh request mới nào; thử thêm **Gọi lại API** hoặc **Mô phỏng lỗi API** để xem xử lý lỗi 503.
+**Demo (khoảng 1 phút 15 giây):** Trên [/performance](http://127.0.0.1:4173/performance), bấm **Tăng bộ đếm cha** hai lần: bộ đếm component thường tăng vọt còn ô dùng `React.memo` đứng yên; sau đó bấm **Đổi khu khảo sát** để thấy props đổi thì cả hai cùng cập nhật. Kéo xuống mục Server State: bấm **Ẩn danh sách** rồi **Mở lại danh sách** trong vòng 60 giây — tab Network không phát sinh request mới nào; thử thêm **Gọi lại API** hoặc **Mô phỏng lỗi API** để xem xử lý lỗi 503.
 
 ### Slide 21 · Demo 2 · Số liệu Lighthouse Trước / Sau sửa code · 16:50–18:10
 
-**Nói:** “Vậy sau khi áp dụng toàn bộ các thay đổi code vừa rồi, con số Lighthouse phản hồi thế nào? Mọi người nhìn vào hai bảng đối chiếu trên màn hình. Ở thí nghiệm tối ưu tải JS, dung lượng JavaScript truyền qua mạng giảm 42% từ 255,4 kB xuống 148,4 kB; thời gian chặn luồng chính TBT giảm mạnh 75% từ 370 ms còn 91 ms, kéo điểm Performance vọt từ 91 lên tròn 100. Còn ở thí nghiệm tối ưu ảnh banner `priority`, cùng dung lượng JS khoảng 146 kB nhưng thời gian LCP rút ngắn từ 2.166 ms xuống còn 1.808 ms — tức nhanh hơn 17% và giữ CLS bằng 0. Mình mở lại trang `/benchmark` để xem bảng số liệu trực tiếp.”
+**Nói:** “Vậy sau khi áp dụng toàn bộ các thay đổi code vừa rồi, con số Lighthouse phản hồi thế nào? Mọi người nhìn vào hai bảng đối chiếu trên màn hình. Ở thí nghiệm tối ưu tải JS, dung lượng JavaScript truyền qua mạng giảm 42% từ 255,4 kB xuống 148,4 kB; thời gian chặn luồng chính TBT giảm mạnh 75% từ 370 ms còn 91 ms, kéo điểm Performance vọt từ 91 lên tròn 100. Còn ở thí nghiệm tối ưu ảnh banner `priority`, cùng dung lượng JS khoảng 146 kB nhưng thời gian LCP rút ngắn từ 2.166 ms xuống còn 1.808 ms — tức nhanh hơn 17% và giữ CLS bằng 0. Mình mở lại trang [/benchmark#before-after](http://127.0.0.1:4173/benchmark#before-after) để xem bảng số liệu trực tiếp.”
 
-**Demo (khoảng 1 phút):** Mở `/benchmark#before-after`, rà nhanh qua đủ 6 chỉ số `Performance`, `LCP`, `CLS`, `TBT`, `FCP`, `Dung lượng JS` ở hai bảng Trước/Sau và chỉ hai nút chuyển nhanh sang các trang lab.
+**Demo (khoảng 1 phút):** Mở [/benchmark#before-after](http://127.0.0.1:4173/benchmark#before-after), rà nhanh qua đủ 6 chỉ số `Performance`, `LCP`, `CLS`, `TBT`, `FCP`, `Dung lượng JS` ở hai bảng Trước/Sau và bấm trực tiếp sang [/labs/js-before](http://127.0.0.1:4173/labs/js-before), [/labs/js-after](http://127.0.0.1:4173/labs/js-after), [/labs/banner-before](http://127.0.0.1:4173/labs/banner-before), [/labs/banner-after](http://127.0.0.1:4173/labs/banner-after) nếu cần đối chiếu sâu.
 
 ### Slide 22 · Chất lượng code: Vấn đề khi không viết test · 18:10–18:50
 
@@ -130,7 +133,7 @@
 
 **Nói:** “Mình kiểm chứng ngay bằng demo chạy test cho phần Sổ nhiệm vụ ở trang chủ, gồm hai luồng tìm kiếm và tạo mới. Trong đó tụi mình cố tình giữ lại một lỗi validation ở form tạo mới: cho phép lưu tên rỗng trong khi test yêu cầu phải báo lỗi bắt buộc. Hãy xem test tự động bắt lỗi này thế nào.”
 
-**Demo (khoảng 1 phút 15 giây):** Mở `/tests`, bấm **Chạy tất cả test** để thấy kết quả **1 đạt, 1 thất bại**. Mở chi tiết case tạo nhiệm vụ để đọc rõ thông báo lỗi chỉ ra vị trí sai, rồi đối chiếu nhanh với cấu trúc Arrange – Act – Assert trong `tests/tasks.test.tsx`.
+**Demo (khoảng 1 phút 15 giây):** Mở [/tests](http://127.0.0.1:4173/tests), bấm **Chạy tất cả test** để thấy kết quả **1 đạt, 1 thất bại**. Mở chi tiết case tạo nhiệm vụ để đọc rõ thông báo lỗi chỉ ra vị trí sai, rồi đối chiếu nhanh với cấu trúc Arrange – Act – Assert trong `tests/tasks.test.tsx`.
 
 ### Slide 27 · Tổng kết bài toán: Hiệu năng & Chất lượng code · 22:00–22:50
 
@@ -142,9 +145,9 @@
 
 ## Khi demo không ra đúng dấu vết
 
-- Nếu DevTools không hiện lại chunk `dynamic` hoặc ảnh ở `/lazy-load`, nhớ bật **Disable cache** và tải lại trang khi DevTools đã mở; riêng `/lazy-load` cần cuộn *bên trong khung ảnh*.
+- Nếu DevTools không hiện lại chunk `dynamic` hoặc ảnh ở [/lazy-load](http://127.0.0.1:4173/lazy-load), nhớ bật **Disable cache** và tải lại trang khi DevTools đã mở; riêng [/lazy-load](http://127.0.0.1:4173/lazy-load) cần cuộn *bên trong khung ảnh*.
 - Nếu CSR hết skeleton quá nhanh trên local, dùng throttling trong Network (ví dụ *Slow 3G*) để thấy rõ chuỗi request và waterfall banner `before` vs `after`.
-- Nếu `/tests` trả lỗi khi chạy, kiểm tra server đang chạy qua `127.0.0.1` hoặc `localhost` và dependency đã cài đầy đủ. Trạng thái kỳ vọng vẫn là 1 đạt, 1 thất bại có chủ đích.
+- Nếu [/tests](http://127.0.0.1:4173/tests) trả lỗi khi chạy, kiểm tra server đang chạy qua `127.0.0.1` hoặc `localhost` và dependency đã cài đầy đủ. Trạng thái kỳ vọng vẫn là 1 đạt, 1 thất bại có chủ đích.
 - Nếu cần đối chiếu lại số liệu sau khi sửa code, chạy `pnpm benchmark` (cần Chrome/Chromium trên máy local).
 
 ## Tài liệu đối chiếu

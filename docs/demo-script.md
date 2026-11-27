@@ -85,51 +85,55 @@
 
 **Demo (khoảng 1 phút):** Mở [/benchmark](http://127.0.0.1:4173/benchmark), chỉ vào biểu đồ LCP và bảng tổng quan của CSR, SSR, SSG. Giải thích nhanh: CSR nặng JS và nhiều request hơn vì phải tải thêm TanStack Query và gọi `/api/pokemon`, còn SSR đọc fixture cục bộ tại chỗ nên có FCP/LCP rất thấp (607 ms).
 
-### Slide 17 · Giảm JavaScript ban đầu & Lazy load · 12:30–13:30
+### Slide 17 · Giảm JavaScript ban đầu & Lazy load · 12:30–14:00
 
-**Nói:** “Nhìn vào bảng đo vừa rồi, dễ thấy hai nguyên nhân hay làm tụt điểm Lighthouse là gói JS tải ban đầu quá to và ảnh chính hiện chậm. Trước hết, để trị bệnh nặng JS, mình kết hợp ba bước: giữ phần hiển thị tĩnh ở Server Component, tách các module ít dùng ngay lúc đầu bằng `next/dynamic()` để chỉ tải khi người dùng bấm mở, và dùng lazy load cho những bức ảnh nằm sâu bên dưới màn hình. Một lưu ý cực kỳ quan trọng là tuyệt đối không lazy load phần tử chính ở màn đầu kẻo phản tác dụng lên LCP. Mình xem thử ngay trên trình duyệt cho dễ thấy.”
+**Nói:** “Nhìn vào bảng đo vừa rồi, dễ thấy hai nguyên nhân hay làm tụt điểm Lighthouse là gói JS tải ban đầu quá nặng và tải thừa những phần chưa dùng tới. Để giải quyết phần JS, mình giữ danh sách tĩnh ở Server Component, còn widget phân tích 151 loài Kanto chỉ tách ra bằng `next/dynamic()` để tải khi người dùng thật sự bấm mở. Tương tự với hình ảnh nằm sâu bên dưới màn hình, mình dùng lazy load để cuộn tới đâu mới tải tới đó — lưu ý không áp dụng cho ảnh banner đầu trang kẻo làm chậm LCP. Mình mở tab Network để quan sát trực tiếp hai cơ chế này.”
 
-**Demo (khoảng 1 phút 15 giây):** Mở DevTools tab Network lọc **JS** và bật **Disable cache**. Vào [/labs/js-before](http://127.0.0.1:4173/labs/js-before) để thấy bundle dữ liệu 151 loài Kanto tải ồ ạt ngay lúc mở trang. Chuyển sang [/labs/js-after](http://127.0.0.1:4173/labs/js-after) tải lại thấy JS ban đầu gọn hẳn, rồi bấm nút **Tải và mở phân tích 151 Pokémon** để quan sát chunk JS mới được nạp thêm theo nhu cầu. Lướt nhanh sang [/lazy-load](http://127.0.0.1:4173/lazy-load), cuộn bên trong khung thư viện để thấy ảnh phía dưới chỉ tải khi lọt vào màn hình.
+**Demo A · Giảm JS với `dynamic()` (khoảng 1 phút):** Mở DevTools → tab **Network**, bật **Disable cache** và chọn lọc **JS**. Mở [http://127.0.0.1:4173/labs/js-before](http://127.0.0.1:4173/labs/js-before), bấm **F5 (Tải lại)** rồi chỉ xuống **thanh tổng kết ở đáy Network**: tổng JS tải ngay lúc đầu lên tới khoảng **255 kB** vì gói phân tích 151 loài bị gộp sẵn. Chuyển sang [http://127.0.0.1:4173/labs/js-after](http://127.0.0.1:4173/labs/js-after) và bấm **F5 (Tải lại)**: tổng JS ban đầu giảm xuống chỉ còn khoảng **148 kB** (giảm ~42%). Tiếp theo bấm nút **Clear (`🚫`)** trên Network cho sạch danh sách, rồi cuộn xuống bấm **Tải và mở phân tích 151 Pokémon** — ngay lập tức chỉ có đúng một chunk `.js` mới được nạp thêm theo nhu cầu.
 
-### Slide 18 · Tối ưu ảnh & Tải sớm banner (`priority`) · 13:30–14:35
+**Demo B · Lazy load ảnh khi cuộn (khoảng 35 giây):** Chuyển sang [http://127.0.0.1:4173/lazy-load](http://127.0.0.1:4173/lazy-load), trong DevTools đổi bộ lọc từ **JS** sang **Img**, bấm **Clear (`🚫`)** rồi **F5 (Tải lại)** — chỉ ảnh đầu tiên ở màn hình trên tải trước. Sau đó cuộn **bên trong khung thư viện ảnh** để thấy `rendering-lab.webp` và `benchmark-lab.webp` chỉ bắt đầu tải khi lọt vào vùng nhìn thấy.
+
+### Slide 18 · Tối ưu ảnh & Tải sớm banner (`priority`) · 14:00–15:05
 
 **Nói:** “Nếu với JS thừa mình phải hoãn lại cho nhẹ trang, thì với bức ảnh banner ngay đầu trang lại cần làm điều ngược lại: ưu tiên tải càng sớm càng tốt. Thay vì để ảnh PNG nặng và tải muộn sau khi JS chạy xong, mình nén ảnh sang WebP gọn hơn tới hơn 95%, khai báo sẵn kích thước khung để giữ CLS bằng 0, và gắn thuộc tính `priority` trên thẻ `<Image>`. Khi đó Next.js tự động chèn preload ngay đầu file HTML để trình duyệt kéo ảnh banner về song song từ những mili giây đầu tiên. Mình mở waterfall Network để kiểm chứng ngay.”
 
-**Demo (khoảng 1 phút):** Mở Network trên [/labs/banner-before](http://127.0.0.1:4173/labs/banner-before) và [/labs/banner-after](http://127.0.0.1:4173/labs/banner-after). So sánh thứ tự waterfall: bên `banner-before`, file PNG nặng (989 KB) mãi tới sau script mới bắt đầu tải; còn bên `banner-after`, file `banner-kanto.webp` (30,6 KB) được gắn ưu tiên cao và xuất hiện ngay đầu danh sách ngay sau HTML.
+**Demo (khoảng 1 phút):** Trong DevTools tab **Network**, chuyển bộ lọc về **All** (giữ **Disable cache**) để nhìn trọn thứ tự tải HTML, script và ảnh. Mở [http://127.0.0.1:4173/labs/banner-before](http://127.0.0.1:4173/labs/banner-before) và bấm **F5**: trong cột Waterfall, ảnh PNG nặng (`banner-kanto-raw.png`, ~989 KB) mãi tới sau các file JS mới bắt đầu tải. Chuyển sang [http://127.0.0.1:4173/labs/banner-after](http://127.0.0.1:4173/labs/banner-after) rồi bấm **F5**: ảnh WebP gọn nhẹ (`banner-kanto.webp`, ~30,6 KB) được ưu tiên `High` và tải ngay đầu danh sách ngay sau document HTML.
 
-### Slide 19 · Cache đa tầng & Quản lý Server State · 14:35–15:25
+### Slide 19 · Cache đa tầng & Quản lý Server State · 15:05–15:50
 
 **Nói:** “Bên cạnh giảm JS và tải sớm ảnh, một vũ khí khác giúp web phản hồi tức thì là tận dụng Cache ở nhiều tầng. Ở tầng build và mạng, trang tĩnh SSG và các HTTP header giúp CDN hay trình duyệt dùng lại ngay kết quả cũ mà không hỏi lại server. Còn ở phía trình duyệt khi gọi API lấy dữ liệu động — tức là phần Server State — dữ liệu nằm ở server nên có thể cũ hoặc lỗi bất cứ lúc nào. Tụi mình dùng TanStack Query lưu tạm trong bộ nhớ theo khóa định danh, cài đặt thời gian dữ liệu còn tươi (`staleTime`) để tránh gọi API trùng lặp và xử lý gọn các trạng thái đang tải hay báo lỗi.”
 
-### Slide 20 · Memo hóa & Demo Cache / Memo · 15:25–16:50
+### Slide 20 · Memo hóa & Demo Cache / Memo · 15:50–17:10
 
-**Nói:** “Và kỹ thuật tối ưu cuối cùng trong bộ giải pháp là Memo hóa với `React.memo` và `useMemo`. Cơ chế của nó là ghi nhớ kết quả render hoặc phép tính nặng khi đầu vào props không đổi — tất nhiên chỉ nên dùng đúng chỗ thật sự tốn CPU vì phép so sánh cũng có chi phí riêng. Bây giờ mình mở màn hình [/performance](http://127.0.0.1:4173/performance) để thử trực tiếp cả bộ đếm render của `React.memo` lẫn cơ chế cache của TanStack Query.”
+**Nói:** “Và kỹ thuật tối ưu cuối cùng trong bộ giải pháp là Memo hóa với `React.memo` và `useMemo`. Cơ chế của nó là ghi nhớ kết quả render hoặc phép tính nặng khi đầu vào props không đổi — tất nhiên chỉ nên dùng đúng chỗ thật sự tốn CPU vì phép so sánh cũng có chi phí riêng. Bây giờ mình mở màn hình [/performance](http://127.0.0.1:4173/performance) để kiểm chứng hai phần: bên trên là bộ đếm render của `React.memo`, còn bên dưới là cơ chế cache và xử lý lỗi API của TanStack Query.”
 
-**Demo (khoảng 1 phút 15 giây):** Trên [/performance](http://127.0.0.1:4173/performance), bấm **Tăng bộ đếm cha** hai lần: bộ đếm component thường tăng vọt còn ô dùng `React.memo` đứng yên; sau đó bấm **Đổi khu khảo sát** để thấy props đổi thì cả hai cùng cập nhật. Kéo xuống mục Server State: bấm **Ẩn danh sách** rồi **Mở lại danh sách** trong vòng 60 giây — tab Network không phát sinh request mới nào; thử thêm **Gọi lại API** hoặc **Mô phỏng lỗi API** để xem xử lý lỗi 503.
+**Demo A · Đối chiếu `React.memo` (khoảng 35 giây):** Trên [/performance](http://127.0.0.1:4173/performance), nhìn vào khung **Memoization** bên phải (hai ô ban đầu đều ở `1 lần commit`). Bấm **Tăng bộ đếm cha** 2 lần: chỉ state của component cha đổi nên ô **Component thường** tăng lên `2` rồi `3 lần commit`, còn ô **Có React.memo** nhận cùng props cũ nên đứng yên ở `1 lần commit`. Sau đó bấm **Đổi khu khảo sát**: lần này prop khu vực đổi (`1 → 2`) nên cả hai ô cùng tăng thêm `1` (`4` và `2 lần commit`) và cập nhật chỉ số giả lập mới.
 
-### Slide 21 · Demo 2 · Số liệu Lighthouse Trước / Sau sửa code · 16:50–18:10
+**Demo B · Cache & xử lý lỗi với TanStack Query (khoảng 45 giây):** Mở DevTools tab **Network**, đổi bộ lọc sang **Fetch/XHR** rồi bấm **Clear (`🚫`)** để xóa request `/api/pokemon` lúc mới vào trang. Kéo xuống mục **Server state với TanStack Query**: (1) bấm **Ẩn danh sách** rồi bấm **Mở lại danh sách** trong vòng 60 giây (`staleTime`) — danh sách hiện lại tức thì, dòng trạng thái ghi **Có dữ liệu trong cache** và tab Network **không có request mới nào**; (2) bấm **Gọi lại API** — ép gửi ngay một request `GET /api/pokemon` (`200`) xuất hiện trên Network; (3) bấm **Mô phỏng lỗi API** — Network báo request `/api/pokemon?loi=1` lỗi **`503`** và UI hiện thông báo lỗi kèm nút **Thử lại**, cuối cùng bấm **Khôi phục API** để danh sách hoạt động lại bình thường.
+
+### Slide 21 · Demo 2 · Số liệu Lighthouse Trước / Sau sửa code · 17:10–18:20
 
 **Nói:** “Vậy sau khi áp dụng toàn bộ các thay đổi code vừa rồi, con số Lighthouse phản hồi thế nào? Mọi người nhìn vào hai bảng đối chiếu trên màn hình. Ở thí nghiệm tối ưu tải JS, dung lượng JavaScript truyền qua mạng giảm 42% từ 255,4 kB xuống 148,4 kB; thời gian chặn luồng chính TBT giảm mạnh 75% từ 370 ms còn 91 ms, kéo điểm Performance vọt từ 91 lên tròn 100. Còn ở thí nghiệm tối ưu ảnh banner `priority`, cùng dung lượng JS khoảng 146 kB nhưng thời gian LCP rút ngắn từ 2.166 ms xuống còn 1.808 ms — tức nhanh hơn 17% và giữ CLS bằng 0. Mình mở lại trang [/benchmark#before-after](http://127.0.0.1:4173/benchmark#before-after) để xem bảng số liệu trực tiếp.”
 
 **Demo (khoảng 1 phút):** Mở [/benchmark#before-after](http://127.0.0.1:4173/benchmark#before-after), rà nhanh qua đủ 6 chỉ số `Performance`, `LCP`, `CLS`, `TBT`, `FCP`, `Dung lượng JS` ở hai bảng Trước/Sau và bấm trực tiếp sang [/labs/js-before](http://127.0.0.1:4173/labs/js-before), [/labs/js-after](http://127.0.0.1:4173/labs/js-after), [/labs/banner-before](http://127.0.0.1:4173/labs/banner-before), [/labs/banner-after](http://127.0.0.1:4173/labs/banner-after) nếu cần đối chiếu sâu.
 
-### Slide 22 · Chất lượng code: Vấn đề khi không viết test · 18:10–18:50
+### Slide 22 · Chất lượng code: Vấn đề khi không viết test · 18:20–18:55
 
 **Nói:** “Đến đây bài toán hiệu năng coi như đã giải quyết gọn và có số liệu kiểm chứng. Nhưng như mình đặt vấn đề ngay từ đầu: tốc độ cao mà code mong manh thì cũng khó giữ lâu dài. Mỗi lần tách Server/Client Component hay bọc `dynamic()` để tối ưu, nếu không có test tự động, cả team lại phải bấm tay kiểm tra lại từ đầu rất tốn thời gian, dễ bỏ sót lỗi hồi quy và rất ngại refactor code.”
 
-### Slide 23 · Component Testing là gì? · 18:50–19:25
+### Slide 23 · Component Testing là gì? · 18:55–19:30
 
 **Nói:** “Đó là lý do mình đưa Component Testing vào quy trình. Hiểu đơn giản, đây là cách viết test tự động để kiểm chứng từng mảnh giao diện đúng như cách người dùng thật sử dụng: từ việc render đúng nội dung, nhận props, gõ chữ, bấm nút cho tới hiện thông báo lỗi hợp lệ khi nhập sai.”
 
-### Slide 24 · Công cụ Component Testing · 19:25–20:00
+### Slide 24 · Công cụ Component Testing · 19:30–20:05
 
 **Nói:** “Trong project mẫu này, tụi mình kết hợp ba công cụ rất phổ biến và nhẹ: Vitest làm bộ chạy test, React Testing Library để render và tìm nút bấm hay ô nhập đúng theo cách người dùng nhìn thấy, và User Event để mô phỏng thao tác gõ, bấm y như thật.”
 
-### Slide 25 · Nguyên tắc viết test: AAA · 20:00–20:35
+### Slide 25 · Nguyên tắc viết test: AAA · 20:05–20:40
 
 **Nói:** “Để người khác đọc bài test phát hiểu ngay, tụi mình viết thống nhất theo 3 bước AAA. Đầu tiên là Arrange để chuẩn bị dữ liệu và dựng component; tiếp theo là Act thực hiện thao tác như người dùng; và cuối cùng Assert kiểm tra kết quả hiển thị trên màn hình. Nhờ tách rạch ròi như vậy, hễ test báo đỏ ở bước Assert là biết ngay giao diện đang lệch ở điểm nào.”
 
-### Slide 26 · Kết quả demo: Test phát hiện lỗi · 20:35–22:00
+### Slide 26 · Kết quả demo: Test phát hiện lỗi · 20:40–22:00
 
 **Nói:** “Mình kiểm chứng ngay bằng demo chạy test cho phần Sổ nhiệm vụ ở trang chủ, gồm hai luồng tìm kiếm và tạo mới. Trong đó tụi mình cố tình giữ lại một lỗi validation ở form tạo mới: cho phép lưu tên rỗng trong khi test yêu cầu phải báo lỗi bắt buộc. Hãy xem test tự động bắt lỗi này thế nào.”
 

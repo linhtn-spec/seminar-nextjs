@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Activity, AppWindow, BookOpen, Boxes, ChartNoAxesColumnIncreasing, CircleDot, Database, FlaskConical, Route, Server } from 'lucide-react'
+import { AppWindow, BookOpen, ChartNoAxesColumnIncreasing, CircleDot, Database, FlaskConical, Images, Route, Server } from 'lucide-react'
 
 const groups = [
   { title: '', links: [{ href: '/', label: 'Sổ nghiên cứu', icon: BookOpen }] },
@@ -13,9 +13,8 @@ const groups = [
     { href: '/ssg', label: 'SSG', icon: Database },
   ] },
   { title: 'Kiến trúc và hiệu năng', links: [
-    { href: '/components', label: 'Server & Client Components', icon: Boxes },
-    { href: '/performance', label: 'Thử nghiệm hiệu năng', icon: Activity },
     { href: '/benchmark', label: 'Benchmark', icon: ChartNoAxesColumnIncreasing },
+    { href: '/lazy-load', label: 'Demo lazy load', icon: Images },
     { href: '/tests', label: 'Danh sách test', icon: FlaskConical },
   ] },
 ]

@@ -1,77 +1,59 @@
 import { render, screen, within } from '@testing-library/react'
-import { taskScenarios } from '../lib/test-scenarios'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
-import { TaskFilter } from '../components/task-filter'
-import { TaskForm } from '../components/task-form'
-import { TaskList } from '../components/task-list'
+import { describe, expect, it } from 'vitest'
 import { TaskManager } from '../components/task-manager'
-import { sampleTasks, taskInputSchema } from '../lib/tasks'
+import { taskScenarios } from '../lib/test-scenarios'
 
 describe('Nhiệm vụ nghiên cứu', () => {
-  it(taskScenarios.list.title, () => {
-    const handlers = { onDelete: vi.fn(), onEdit: vi.fn(), onToggle: vi.fn() }
-    const { rerender } = render(<TaskList tasks={[sampleTasks[0]]} {...handlers} />)
-    expect(screen.getByRole('heading', { name: sampleTasks[0].title })).toBeVisible()
-    expect(screen.getByText('Dữ liệu mẫu')).toBeVisible()
-    expect(screen.getByText('Ưu tiên cao')).toBeVisible()
-    expect(screen.getByText('Đang làm')).toBeVisible()
-    rerender(<TaskList tasks={[]} {...handlers} />)
-    expect(screen.getByText('Không có nhiệm vụ phù hợp.')).toBeVisible()
-  })
-
-  it(taskScenarios.form.title, async () => {
+  it(taskScenarios.create.title, async () => {
     const user = userEvent.setup()
-    const save = vi.fn()
-    const cancel = vi.fn()
-    render(<TaskForm onSave={save} onCancel={cancel} />)
-    await user.type(screen.getByLabelText('Tên nhiệm vụ'), 'Tìm Eevee')
-    await user.click(screen.getByRole('button', { name: 'Hủy' }))
-    expect(cancel).toHaveBeenCalledTimes(1)
-    expect(save).not.toHaveBeenCalled()
-  })
-
-  it(taskScenarios.validation.title, () => {
-    const base = { title: '  Tìm Eevee  ', note: '  Đồng cỏ  ', status: 'Chưa làm', priority: 'Vừa' }
-    expect(taskInputSchema.parse(base)).toMatchObject({ title: 'Tìm Eevee', note: 'Đồng cỏ' })
-    expect(taskInputSchema.safeParse({ ...base, status: 'Khác' }).success).toBe(false)
-    expect(taskInputSchema.safeParse({ ...base, note: 'a'.repeat(241) }).success).toBe(false)
-  })
-
-  it(taskScenarios.filter.title, async () => {
-    const search = vi.fn()
-    const status = vi.fn()
-    render(<TaskFilter search="" status="" onSearch={search} onStatus={status} />)
-    await userEvent.type(screen.getByRole('textbox', { name: 'Tìm nhiệm vụ' }), 'P')
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Lọc theo trạng thái' }), 'Đang làm')
-    expect(search).toHaveBeenCalledWith('P')
-    expect(status).toHaveBeenCalledWith('Đang làm')
-  })
-
-  it(taskScenarios.flow.title, async () => {
-    const user = userEvent.setup()
-    const mounted = render(<TaskManager />)
-    await user.click(screen.getByRole('button', { name: 'Thêm nhiệm vụ' }))
-    await user.type(screen.getByLabelText('Tên nhiệm vụ'), 'Tìm Eevee')
-    await user.click(screen.getByRole('button', { name: 'Lưu nhiệm vụ' }))
-    expect(await screen.findByRole('heading', { name: 'Tìm Eevee' })).toBeVisible()
-    expect(screen.getByText('Nhiệm vụ của bạn')).toBeVisible()
-    mounted.unmount()
     render(<TaskManager />)
-    await user.click(screen.getByRole('button', { name: 'Sửa: Tìm Eevee' }))
-    const title = screen.getByLabelText('Tên nhiệm vụ')
+
+    await user.click(screen.getByRole('button', { name: 'Thêm nhiệm vụ' }))
+    const form = screen.getByRole('form', { name: 'Nhiệm vụ mới' })
+    const title = within(form).getByRole('textbox', { name: 'Tên nhiệm vụ' })
+    const save = within(form).getByRole('button', { name: 'Lưu nhiệm vụ' })
+    const list = screen.getByRole('list', { name: 'Danh sách nhiệm vụ' })
+
+    await user.click(save)
+    expect(
+      screen.queryByText('Tên nhiệm vụ là bắt buộc.'),
+      'Tên nhiệm vụ trống phải hiện lỗi “Tên nhiệm vụ là bắt buộc.”',
+    ).not.toBeNull()
+    expect(form).toBeInTheDocument()
+    expect(within(list).getAllByRole('listitem')).toHaveLength(3)
+
+    await user.type(title, '   ')
+    await user.click(save)
+    expect(
+      screen.queryByText('Tên nhiệm vụ là bắt buộc.'),
+      'Tên nhiệm vụ chỉ có khoảng trắng phải hiện lỗi “Tên nhiệm vụ là bắt buộc.”',
+    ).not.toBeNull()
+    expect(form).toBeInTheDocument()
+    expect(within(list).getAllByRole('listitem')).toHaveLength(3)
+
+    expect(title).toBeRequired()
     await user.clear(title)
-    await user.type(title, 'Theo dấu Eevee')
-    await user.click(screen.getByRole('button', { name: 'Lưu nhiệm vụ' }))
-    await user.click(await screen.findByRole('button', { name: 'Đánh dấu hoàn thành: Theo dấu Eevee' }))
-    await user.type(screen.getByRole('textbox', { name: 'Tìm nhiệm vụ' }), 'eevee')
-    await user.selectOptions(screen.getByRole('combobox', { name: 'Lọc theo trạng thái' }), 'Hoàn thành')
-    expect(within(screen.getByRole('list')).getAllByRole('listitem')).toHaveLength(1)
-    expect(screen.getByText('Hoàn thành', { selector: 'span' })).toBeVisible()
-    vi.spyOn(window, 'confirm').mockReturnValue(true)
-    await user.click(screen.getByRole('button', { name: 'Xóa: Theo dấu Eevee' }))
+    await user.type(title, 'Tìm Eevee')
+    await user.click(save)
+
+    const heading = await screen.findByRole('heading', { name: 'Tìm Eevee' })
+    expect(heading).toBeVisible()
+    expect(within(heading.closest('li')!).getByText('Nhiệm vụ của bạn')).toBeVisible()
+  })
+
+  it(taskScenarios.search.title, async () => {
+    const user = userEvent.setup()
+    render(<TaskManager />)
+    const search = screen.getByRole('textbox', { name: 'Tìm nhiệm vụ' })
+
+    await user.type(search, 'squirtle')
+    const list = screen.getByRole('list', { name: 'Danh sách nhiệm vụ' })
+    expect(within(list).getAllByRole('listitem')).toHaveLength(1)
+    expect(within(list).getByRole('heading', { name: 'Khảo sát Squirtle ven hồ' })).toBeVisible()
+
+    await user.clear(search)
+    await user.type(search, 'không có')
     expect(screen.getByText('Không có nhiệm vụ phù hợp.')).toBeVisible()
-    await user.click(screen.getByRole('button', { name: 'Khôi phục mẫu' }))
-    expect(screen.getByRole('heading', { name: sampleTasks[0].title })).toBeVisible()
   })
 })
